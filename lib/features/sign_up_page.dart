@@ -1,96 +1,291 @@
 import 'package:flutter/material.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   final String userType;
 
   const SignUpPage({super.key, required this.userType});
 
   @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('$userType Sign-Up'),
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('$userType Sign-Up', style: const TextStyle(fontSize: 24)),
-                const SizedBox(height: 20),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
-                    prefixIcon: Icon(Icons.person, color: Colors.blueAccent),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 50),
+
+                      const Text(
+                        'Create Account',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Name Text Field
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.925,
+                        height: 50,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Name',
+                            prefixIcon:
+                                const Icon(Icons.person, color: Colors.green),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.grey, width: 1.5),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.green, width: 2.0),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          keyboardType: TextInputType.name,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Email Text Field
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width *
+                            0.925, // to occupy 92.5% of screen width
+                        height: 50,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Email Address',
+                            prefixIcon:
+                                const Icon(Icons.email, color: Colors.green),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.grey, width: 1.5),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.green, width: 2.0),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Phone Number Text Field
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width *
+                            0.925, // to occupy 92.5% of screen width
+                        height: 50,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Phone Number',
+                            prefixIcon:
+                                const Icon(Icons.phone, color: Colors.green),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.grey, width: 1.5),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.green, width: 2.0),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          keyboardType: TextInputType.phone,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Password Text Field
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.925,
+                        height: 50,
+                        child: TextFormField(
+                          obscureText: !_isPasswordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            prefixIcon:
+                                const Icon(Icons.lock, color: Colors.green),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                // for eye icon
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.green,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  // for eye icon logic to see password
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.grey, width: 1.5),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.green, width: 2.0),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          keyboardType: TextInputType.visiblePassword,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Confirm Password Text Field
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.925,
+                        height: 50,
+                        child: TextFormField(
+                          obscureText: !_isConfirmPasswordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'Confirm Password',
+                            prefixIcon:
+                                const Icon(Icons.lock, color: Colors.green),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                // for eye icon
+                                _isConfirmPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.green,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  // for eye icon logic to see password
+                                  _isConfirmPasswordVisible =
+                                      !_isConfirmPasswordVisible;
+                                });
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.grey, width: 1.5),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.green, width: 2.0),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          keyboardType: TextInputType.visiblePassword,
+                        ),
+                      ),
+                    ],
                   ),
-                  keyboardType: TextInputType.name,
                 ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Email Address',
-                    prefixIcon: Icon(Icons.email, color: Colors.blueAccent),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Phone Number',
-                    prefixIcon: Icon(Icons.phone, color: Colors.blueAccent),
-                  ),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock, color: Colors.blueAccent),
-                  ),
-                  obscureText: true,
-                  keyboardType: TextInputType.visiblePassword,
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: Icon(Icons.lock, color: Colors.blueAccent),
-                  ),
-                  obscureText: true,
-                  keyboardType: TextInputType.visiblePassword,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                  ),
-                  onPressed: () {
-                    // sign-up logic
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => const LoginPage(),
-                    //   ),
-                    // );
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     // Placeholder for navigation to sign-up page
-                    //     print('Sign-up page not yet implemented');
-                    //   },
-                    //   child: const Text('Go to Sign-Up'),
-                    // );
-                  },
-                  child: const Text('Sign Up'),
-                ),
-              ],
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        value: true, // just for placeholder
+                        onChanged: (value) {
+                          // Checkbox logic (not yet implemented)
+                        },
+                        activeColor: Colors.green,
+                      ),
+                      const Expanded(
+                        child: Text(
+                          'By registering, you are agreeing with our Terms of Use and Privacy Policy',
+                          style: TextStyle(color: Colors.black87),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Register Button
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      onPressed: () {
+                        // Sign-up logic to Login (not yet implemented)
+                      },
+                      child: const Text(
+                        'Register',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Link to Login (no link yet)
+                  const Text(
+                    'Already have an account?',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 103, 172, 105),
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

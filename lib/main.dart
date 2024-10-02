@@ -1,4 +1,5 @@
 import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
+import 'package:cc_206_boarding_house_locator/features/sign_up_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +17,9 @@ class MainApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      home: const RoleSelectionPage(),
+      home: const SignUpPage(
+        userType: '',
+      ),
     );
   }
 }

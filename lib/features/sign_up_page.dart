@@ -14,15 +14,46 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
+  // to get inputs from both fields and compare
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
   // for email validation
   String? _checkEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
     }
     final emailValidFormat =
-        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     if (!emailValidFormat.hasMatch(value)) {
       return 'Enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _checkPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your password';
+    }
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    // Check the passwordfor at least one uppercase letter
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+
+    // Check for at least one number
+    if (!RegExp(r'\d').hasMatch(value)) {
+      return 'Password must contain at least one number';
+    }
+
+    return null;
+  }
+
+  String? _checkConfirmPassword(String? value) {
+    if (value != _passwordController.text) {
+      return 'Passwords do not match';
     }
     return null;
   }
@@ -63,11 +94,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               labelText: 'Name',
                               prefixIcon:
-                                  const Icon(Icons.person, color: Colors.green),
+                              const Icon(Icons.person, color: Colors.green),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide:
-                                    const BorderSide(color: Colors.grey),
+                                const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
@@ -94,11 +125,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               labelText: 'Email Address',
                               prefixIcon:
-                                  const Icon(Icons.email, color: Colors.green),
+                              const Icon(Icons.email, color: Colors.green),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide:
-                                    const BorderSide(color: Colors.grey),
+                                const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
@@ -126,11 +157,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               labelText: 'Phone Number',
                               prefixIcon:
-                                  const Icon(Icons.phone, color: Colors.green),
+                              const Icon(Icons.phone, color: Colors.green),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide:
-                                    const BorderSide(color: Colors.grey),
+                                const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
@@ -148,17 +179,18 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Password Text Field
+                        // Password Text Field (now with validation)
                         SizedBox(
                           width: MediaQuery.of(context).size.width *
                               0.925, // to occupy 92.5% of screen width
                           height: 50,
                           child: TextFormField(
+                            controller: _passwordController,
                             obscureText: !_isPasswordVisible,
                             decoration: InputDecoration(
                               labelText: 'Password',
                               prefixIcon:
-                                  const Icon(Icons.lock, color: Colors.green),
+                              const Icon(Icons.lock, color: Colors.green),
                               // IconButton for eye icon
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -178,7 +210,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide:
-                                    const BorderSide(color: Colors.grey),
+                                const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
@@ -192,21 +224,23 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                             ),
                             keyboardType: TextInputType.visiblePassword,
+                            validator: _checkPassword,
                           ),
                         ),
                         const SizedBox(height: 10),
 
-                        // Confirm Password Text Field
+                        // Confirm Password Text Field (now with validation)
                         SizedBox(
                           width: MediaQuery.of(context).size.width *
                               0.925, // to occupy 92.5% of screen width
                           height: 50,
                           child: TextFormField(
+                            controller: _confirmPasswordController,
                             obscureText: !_isConfirmPasswordVisible,
                             decoration: InputDecoration(
                               labelText: 'Confirm Password',
                               prefixIcon:
-                                  const Icon(Icons.lock, color: Colors.green),
+                              const Icon(Icons.lock, color: Colors.green),
                               // IconButton for eye icon
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -220,14 +254,14 @@ class _SignUpPageState extends State<SignUpPage> {
                                   setState(() {
                                     // for eye icon logic to see password
                                     _isConfirmPasswordVisible =
-                                        !_isConfirmPasswordVisible;
+                                    !_isConfirmPasswordVisible;
                                   });
                                 },
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide:
-                                    const BorderSide(color: Colors.grey),
+                                const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
@@ -241,6 +275,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                             ),
                             keyboardType: TextInputType.visiblePassword,
+                            validator: _checkConfirmPassword,
                           ),
                         ),
                       ],

@@ -69,63 +69,78 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
+                  child: Stack(
+                    clipBehavior: Clip
+                        .none, // to ensure the text isn't clipped in the stack
                     children: [
+                      Column(
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.99,
+                            height: 50,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                    color: Colors.green, width: 2.0),
+                                foregroundColor: Colors.black,
+                                backgroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0, vertical: 14.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              onPressed: () {
+                                // Logic to identify type of user for boarder
+                              },
+                              child: const Text(
+                                'Are you a boarder?',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.green),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.99,
+                            height: 50,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.green,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0, vertical: 14.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              onPressed: () {
+                                // Logic to identify type of user for owner
+                              },
+                              child: const Text(
+                                'Are you an owner?',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       if (showTapText)
-                        const Text(
-                          'Pick your role',
-                          style: TextStyle(fontSize: 18, color: Colors.black54),
-                        ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.99,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            side: const BorderSide(
-                                color: Colors.green, width: 2.0),
-                            foregroundColor: Colors.black,
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24.0, vertical: 14.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
-                          onPressed: () {
-                            // Logic to identify type of user for boarder
-                          },
+                        Positioned(
+                          top: -40, // put the text above the buttons
+                          left: 0,
+                          right: 0,
                           child: const Text(
-                            'Are you a boarder?',
-                            style: TextStyle(fontSize: 16, color: Colors.green),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.99,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24.0, vertical: 14.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
-                          onPressed: () {
-                            // Logic to identify type of user for owner
-                          },
-                          child: const Text(
-                            'Are you an owner?',
+                            'Pick your role',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 16,
-                            ),
+                                fontSize: 18,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),

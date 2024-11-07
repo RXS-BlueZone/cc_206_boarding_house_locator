@@ -351,7 +351,24 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // to home page if validation is successful (not yet implemented)
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext) {
+                                return AlertDialog(
+                                  title: Text('Registration Successful'),
+                                  content: Text(
+                                      'Your account has been created and successfully registered!'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           }
                         },
                         child: const Text(
@@ -362,7 +379,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                   
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -381,7 +398,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             "Log in",
                             style: TextStyle(
                               color: Color.fromARGB(255, 103, 172, 105),
-                              fontSize: 16, 
+                              fontSize: 16,
                             ),
                           ),
                         ),

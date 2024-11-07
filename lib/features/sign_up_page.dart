@@ -362,14 +362,30 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-
-                    // Link to Login (no link yet)
-                    const Text(
-                      'Already have an account?',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 103, 172, 105),
-                        fontSize: 16,
-                      ),
+                   
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Already have an account?',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 16,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            // Link to Login (no link yet)
+                          },
+                          child: const Text(
+                            "Log in",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 103, 172, 105),
+                              fontSize: 16, 
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
                   ],

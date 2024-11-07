@@ -9,6 +9,7 @@ class RoleSelectionPage extends StatefulWidget {
 
 class _RoleSelectionPageState extends State<RoleSelectionPage> {
   bool showTapText = false;
+  double tapTextOpacity = 1.0; // initial opacity after tapping
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +48,12 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                         onTap: () {
                           setState(() {
                             showTapText = true;
+                          });
+                          // to fade out the text after 2 seconds by changing the opacity
+                          Future.delayed(const Duration(seconds: 2), () {
+                            setState(() {
+                              tapTextOpacity = 0.0;
+                            });
                           });
                         },
                         child: SizedBox(
@@ -132,13 +139,17 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                           top: -40, // put the text above the buttons
                           left: 0,
                           right: 0,
-                          child: const Text(
-                            'Pick your role',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.bold),
+                          child: AnimatedOpacity(
+                            opacity: tapTextOpacity,
+                            duration: const Duration(seconds: 2),
+                            child: const Text(
+                              'Pick your role',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                     ],

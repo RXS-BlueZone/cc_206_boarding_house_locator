@@ -101,6 +101,11 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                               ),
                               onPressed: () {
                                 // Logic to identify type of user for boarder
+                                Navigator.pushNamed(
+                                  context,
+                                  '/signup',
+                                  arguments: 'Boarder',  // to pass 'Boarder' as userType argument
+                                );
                               },
                               child: const Text(
                                 'Are you a boarder?',
@@ -124,7 +129,11 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                                 ),
                               ),
                               onPressed: () {
-                                // Logic to identify type of user for owner
+                                Navigator.pushNamed(
+                                  context,
+                                  '/signup',
+                                  arguments: 'Owner',  // to pass 'Owner' as userType argument
+                                );
                               },
                               child: const Text(
                                 'Are you an owner?',

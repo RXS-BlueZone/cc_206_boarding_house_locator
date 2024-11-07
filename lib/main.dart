@@ -17,9 +17,13 @@ class MainApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      home: const SignUpPage(
-        userType: '',
-      ),
+      routes: {
+        '/': (context) => const RoleSelectionPage(),
+        '/signup': (context) => const SignUpPage(
+              userType: '',
+            ),
+      },
+      initialRoute: '/',
     );
   }
 }

@@ -48,6 +48,8 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                         onTap: () {
                           setState(() {
                             showTapText = true;
+                            tapTextOpacity =
+                                1.0; // Show the text instantly and reset opacity to 1
                           });
                           // to fade out the text after 2 seconds by changing the opacity
                           Future.delayed(const Duration(seconds: 2), () {

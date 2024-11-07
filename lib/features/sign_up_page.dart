@@ -70,6 +70,14 @@ class _SignUpPageState extends State<SignUpPage> {
     return null;
   }
 
+  // for name validation
+  String? _checkName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your name';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,6 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                             ),
                             keyboardType: TextInputType.name,
+                            validator: _checkName,
                           ),
                         ),
                         const SizedBox(height: 10),

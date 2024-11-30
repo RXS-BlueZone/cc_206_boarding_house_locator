@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  supabase_flutter: ^0.3.0  
+  flutter_secure_storage: ^5.0.2  
+  provider: ^6.0.3  
 
 dev_dependencies:
   flutter_test:
@@ -18,6 +21,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets: 
-   - lib/assets/logo.png
-   - lib/assets/role_selection_illustration.png
+  assets:
+    - lib/assets/logo.png
+    - lib/assets/role_selection_illustration.png
+    - lib/assets/bh1.jpg
+    - lib/assets/bh2.jpg
+    - lib/assets/bh3.webp

@@ -1,9 +1,9 @@
+import 'package:cc_206_boarding_house_locator/features/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUpPage extends StatefulWidget {
-  final String userType;
-
-  const SignUpPage({super.key, required this.userType});
+  const SignUpPage({super.key, required String userType});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -17,6 +17,27 @@ class _SignUpPageState extends State<SignUpPage> {
   // to get inputs from both fields and compare
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  // Added controllers for email and phone
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+
+  final _nameController = TextEditingController(); // Added controller for name
+
+  String userType =
+      ''; // This will store the user type passed from the previous page
+
+  // Retrieve the userType from the ModalRoute
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments as String?;
+    if (args != null) {
+      setState(() {
+        userType = args; // Store the user type in the state
+      });
+    }
+  }
 
   // for email validation
   String? _checkEmail(String? value) {
@@ -78,6 +99,147 @@ class _SignUpPageState extends State<SignUpPage> {
     return null;
   }
 
+// Function to handle user registration
+  Future<void> _registerUser() async {
+    try {
+      // Register the user in Supabase with email and password
+      final response = await Supabase.instance.client.auth.signUp(
+        _emailController.text, // Get email from the controller
+        _passwordController.text, // Get password from the controller
+      );
+
+      if (response.error == null) {
+        // Retrieve the user ID from the response
+        final userId = response.user?.id;
+
+        if (userId == null) {
+          // Handle the case where userId is unexpectedly null
+          print('User ID is null after registration');
+          showDialog(
+            context: context,
+            builder: (BuildContext) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('Failed to retrieve user ID. Please try again.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+          return; // Stop execution if the user ID is null
+        }
+
+        // Log the user type and user ID to ensure they're correct
+        print('User Type: $userType'); // Debugging line
+        print('User ID: $userId'); // Debugging line
+
+        // Save additional user details into the 'users' table
+        final insertResponse =
+            await Supabase.instance.client.from('users').insert([
+          {
+            'id': userId, // Use the retrieved user ID
+            'full_name': _nameController.text,
+            'email': _emailController.text,
+            'phone_number': _phoneController.text,
+            'user_type': userType, // Use the selected role
+          }
+        ]).execute(); // Call .execute() to actually send the request
+
+        // Check for errors in the insert response
+        if (insertResponse.error != null) {
+          // Log the error details for debugging
+          print('Insert Error: ${insertResponse.error?.message}');
+          showDialog(
+            context: context,
+            builder: (BuildContext) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text(
+                    'Failed to save user details: ${insertResponse.error?.message ?? 'Unknown error'}'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+          return; // Stop execution if user details failed to insert
+        }
+
+        // Show success dialog
+        showDialog(
+          context: context,
+          builder: (BuildContext) {
+            return AlertDialog(
+              title: Text('Registration Successful'),
+              content: Text(
+                  'Your account has been created and successfully registered!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog
+                    // Optionally, navigate to another page here
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // Handle registration errors
+        print('SignUp Error: ${response.error?.message}');
+        showDialog(
+          context: context,
+          builder: (BuildContext) {
+            return AlertDialog(
+              title: Text('Registration Failed'),
+              content: Text(response.error!.message),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      // Handle unexpected errors
+      print('Error during registration: $e');
+      showDialog(
+        context: context,
+        builder: (BuildContext) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('An unexpected error occurred. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +279,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               0.925, // to occupy 92.5% of screen width
                           height: 50,
                           child: TextFormField(
+                            controller:
+                                _nameController, // Added controller for name
                             decoration: InputDecoration(
                               labelText: 'Name',
                               prefixIcon:
@@ -149,6 +313,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               0.925, // to occupy 92.5% of screen width
                           height: 50,
                           child: TextFormField(
+                            controller: _emailController,
                             decoration: InputDecoration(
                               labelText: 'Email Address',
                               prefixIcon:
@@ -175,12 +340,13 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Phone Number Text Field (now with validation)
+                        // Phone Text Field
                         SizedBox(
                           width: MediaQuery.of(context).size.width *
                               0.925, // to occupy 92.5% of screen width
                           height: 50,
                           child: TextFormField(
+                            controller: _phoneController,
                             decoration: InputDecoration(
                               labelText: 'Phone Number',
                               prefixIcon:
@@ -207,7 +373,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Password Text Field (now with validation)
+                        // Password Text Field
                         SizedBox(
                           width: MediaQuery.of(context).size.width *
                               0.925, // to occupy 92.5% of screen width
@@ -257,7 +423,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Confirm Password Text Field (now with validation)
+                        // Confirm Password Text Field
                         SizedBox(
                           width: MediaQuery.of(context).size.width *
                               0.925, // to occupy 92.5% of screen width
@@ -337,49 +503,26 @@ class _SignUpPageState extends State<SignUpPage> {
                     const SizedBox(height: 10),
 
                     // Register Button
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width *
-                          0.9, // to occupy 90% of screen width
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          _registerUser();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
+                          minimumSize: const Size(370, 50),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext) {
-                                return AlertDialog(
-                                  title: Text('Registration Successful'),
-                                  content: Text(
-                                      'Your account has been created and successfully registered!'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                        },
-                        child: const Text(
-                          'Register',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w600),
+                              borderRadius: BorderRadius.circular(8))),
+                      child: const Text(
+                        "Register",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -392,7 +535,11 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            // Link to Login (no link yet)
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
+                            );
                           },
                           child: const Text(
                             "Log in",
@@ -404,10 +551,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
                   ],
                 ),
-              ),
+              )
             ],
           ),
         ),

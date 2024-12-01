@@ -10,22 +10,20 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final _formKey = GlobalKey<FormState>(); // Key to validate the form
+  final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
-  // to get inputs from both fields and compare
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // Added controllers for email and phone
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
 
-  final _nameController = TextEditingController(); // Added controller for name
+  final _nameController = TextEditingController();
 
   String userType =
-      ''; // This will store the user type passed from the previous page
+      ''; // storage for user type passed from the role selection as arguments
 
   // Retrieve the userType from the ModalRoute
   @override
@@ -34,7 +32,7 @@ class _SignUpPageState extends State<SignUpPage> {
     final args = ModalRoute.of(context)?.settings.arguments as String?;
     if (args != null) {
       setState(() {
-        userType = args; // Store the user type in the state
+        userType = args; // Store the user type
       });
     }
   }
@@ -99,139 +97,113 @@ class _SignUpPageState extends State<SignUpPage> {
     return null;
   }
 
-// Function to handle user registration
+  // Function to handle user registration
   Future<void> _registerUser() async {
     try {
-      // Register the user in Supabase with email and password
+      // Register the user in using Supabase Auth
       final response = await Supabase.instance.client.auth.signUp(
-        _emailController.text, // Get email from the controller
-        _passwordController.text, // Get password from the controller
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
       );
 
-      if (response.error == null) {
-        // Retrieve the user ID from the response
-        final userId = response.user?.id;
-
-        if (userId == null) {
-          // Handle the case where userId is unexpectedly null
-          print('User ID is null after registration');
-          showDialog(
-            context: context,
-            builder: (BuildContext) {
-              return AlertDialog(
-                title: Text('Error'),
-                content: Text('Failed to retrieve user ID. Please try again.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
-          return; // Stop execution if the user ID is null
-        }
-
-        // Log the user type and user ID to ensure they're correct
-        print('User Type: $userType'); // Debugging line
-        print('User ID: $userId'); // Debugging line
-
-        // Save additional user details into the 'users' table
-        final insertResponse =
-            await Supabase.instance.client.from('users').insert([
-          {
-            'id': userId, // Use the retrieved user ID
-            'full_name': _nameController.text,
-            'email': _emailController.text,
-            'phone_number': _phoneController.text,
-            'user_type': userType, // Use the selected role
-          }
-        ]).execute(); // Call .execute() to actually send the request
-
-        // Check for errors in the insert response
-        if (insertResponse.error != null) {
-          // Log the error details for debugging
-          print('Insert Error: ${insertResponse.error?.message}');
-          showDialog(
-            context: context,
-            builder: (BuildContext) {
-              return AlertDialog(
-                title: Text('Error'),
-                content: Text(
-                    'Failed to save user details: ${insertResponse.error?.message ?? 'Unknown error'}'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
-          return; // Stop execution if user details failed to insert
-        }
-
-        // Show success dialog
+      if (response.user == null) {
         showDialog(
           context: context,
-          builder: (BuildContext) {
+          builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Registration Successful'),
-              content: Text(
-                  'Your account has been created and successfully registered!'),
+              title: const Text('Registration Failed'),
+              content:
+                  Text(response.error?.message ?? 'Unknown error occurred'),
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context); // Close the dialog
-                    // Optionally, navigate to another page here
+                    Navigator.pop(context);
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
           },
         );
-      } else {
-        // Handle registration errors
-        print('SignUp Error: ${response.error?.message}');
-        showDialog(
-          context: context,
-          builder: (BuildContext) {
-            return AlertDialog(
-              title: Text('Registration Failed'),
-              content: Text(response.error!.message),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the dialog
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
+        return;
       }
-    } catch (e) {
-      // Handle unexpected errors
-      print('Error during registration: $e');
+
+      // Retrieve the user ID from the response
+      final userId = response.user!.id;
+
+      // Insert additional user details into 'USERS' table
+      final insertResponse =
+          await Supabase.instance.client.from('USERS').insert([
+        {
+          'user_id': userId, // ID from the Supabase Auth
+          'user_fullname': _nameController.text.trim(),
+          'user_email': _emailController.text.trim(),
+          'user_password': _passwordController.text.trim(),
+          'user_phonenumber': _phoneController.text.trim(),
+          'user_type': userType,
+        }
+      ]).execute();
+
+      if (insertResponse.error != null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text(
+                'Failed to save user details: ${insertResponse.error?.message ?? 'Unknown error'}',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        return; // Stop if there was an error
+      }
+
+      // If successful
       showDialog(
         context: context,
-        builder: (BuildContext) {
+        builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('An unexpected error occurred. Please try again.'),
+            title: const Text('Registration Successful'),
+            content: const Text(
+              'Your account has been created successfully! You can now log in.',
+            ),
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Text('An unexpected error occurred: $e'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
               ),
             ],
           );
@@ -252,7 +224,7 @@ class _SignUpPageState extends State<SignUpPage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Form(
-          key: _formKey, // key for the form
+          key: _formKey,
           child: Column(
             children: [
               Expanded(
@@ -275,12 +247,10 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         // Name Text Field
                         SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.925, // to occupy 92.5% of screen width
+                          width: MediaQuery.of(context).size.width * 0.925,
                           height: 50,
                           child: TextFormField(
-                            controller:
-                                _nameController, // Added controller for name
+                            controller: _nameController,
                             decoration: InputDecoration(
                               labelText: 'Name',
                               prefixIcon:
@@ -307,10 +277,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Email Text Field (now with validation)
+                        // Email Text Field
                         SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.925, // to occupy 92.5% of screen width
+                          width: MediaQuery.of(context).size.width * 0.925,
                           height: 50,
                           child: TextFormField(
                             controller: _emailController,
@@ -342,8 +311,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         // Phone Text Field
                         SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.925, // to occupy 92.5% of screen width
+                          width: MediaQuery.of(context).size.width * 0.925,
                           height: 50,
                           child: TextFormField(
                             controller: _phoneController,
@@ -375,8 +343,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         // Password Text Field
                         SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.925, // to occupy 92.5% of screen width
+                          width: MediaQuery.of(context).size.width * 0.925,
                           height: 50,
                           child: TextFormField(
                             controller: _passwordController,
@@ -385,10 +352,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               labelText: 'Password',
                               prefixIcon:
                                   const Icon(Icons.lock, color: Colors.green),
-                              // IconButton for eye icon
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  // for eye icon
                                   _isPasswordVisible
                                       ? Icons.visibility
                                       : Icons.visibility_off,
@@ -396,7 +361,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    // for eye icon logic to see password
                                     _isPasswordVisible = !_isPasswordVisible;
                                   });
                                 },
@@ -425,8 +389,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                         // Confirm Password Text Field
                         SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.925, // to occupy 92.5% of screen width
+                          width: MediaQuery.of(context).size.width * 0.925,
                           height: 50,
                           child: TextFormField(
                             controller: _confirmPasswordController,
@@ -435,10 +398,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               labelText: 'Confirm Password',
                               prefixIcon:
                                   const Icon(Icons.lock, color: Colors.green),
-                              // IconButton for eye icon
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  // for eye icon
                                   _isConfirmPasswordVisible
                                       ? Icons.visibility
                                       : Icons.visibility_off,
@@ -446,7 +407,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    // for eye icon logic to see password
                                     _isConfirmPasswordVisible =
                                         !_isConfirmPasswordVisible;
                                   });

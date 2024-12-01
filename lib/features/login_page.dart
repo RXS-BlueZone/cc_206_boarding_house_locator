@@ -1,6 +1,8 @@
-import 'package:cc_206_boarding_house_locator/features/homepage%20(placeholder).dart';
+import 'package:cc_206_boarding_house_locator/features/Boarderhomepage(placeholder).dart';
+import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
 import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,36 +12,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>(); // Key to validate the form
+  final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
 
-  // Email and Password Controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // Email validation
-  String? _checkEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your email';
-    }
-    final emailValidFormat =
-        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-    if (!emailValidFormat.hasMatch(value)) {
-      return 'Enter a valid email address';
-    }
-    return null;
-  }
-
-  // Password validation
-  String? _checkPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your password';
-    }
-    if (value.length < 8) {
-      return 'Password must be at least 8 characters';
-    }
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +26,12 @@ class _LoginPageState extends State<LoginPage> {
           color: Colors.green,
         ),
         backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Form(
-          key: _formKey, // key for the form
+          key: _formKey,
           child: Column(
             children: [
               Expanded(
@@ -102,7 +80,6 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             keyboardType: TextInputType.emailAddress,
-                            validator: _checkEmail,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -149,7 +126,6 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             keyboardType: TextInputType.visiblePassword,
-                            validator: _checkPassword,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -193,12 +169,69 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Navigate to HomePage after successful login
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => HomePage()),
+                      onPressed: () async {
+                        final email = _emailController.text.trim();
+                        final password = _passwordController.text;
+
+                        try {
+                          // to check the USERS table for a user with the provided email and password
+                          final response = await Supabase.instance.client
+                              .from('USERS')
+                              .select('user_email, user_password, user_type')
+                              .eq('user_email', email)
+                              .eq('user_password', password)
+                              .execute();
+
+                          if (response.data != null &&
+                              response.data.isNotEmpty) {
+                            final userType = response.data[0]['user_type'];
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Login successful!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+
+                            // Go to respective homepage based on user type
+                            if (userType == 'Boarder') {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BoarderHomePage()),
+                              );
+                            } else if (userType == 'Owner') {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => OwnerHomePage()),
+                              );
+                            } else {
+                              // Handle invalid user type (for debugging purposes)
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Invalid user type. Please contact support.'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          } else {
+                            // Invalid credentials (invalid email or password)
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Invalid email or password. Please try again.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          // Handle errors during the login process
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                            ),
                           );
                         }
                       },

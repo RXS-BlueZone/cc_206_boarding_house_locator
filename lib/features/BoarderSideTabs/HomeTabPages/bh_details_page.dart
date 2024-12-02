@@ -19,15 +19,17 @@ class BoardingHouseDetailsPage extends StatefulWidget {
 
 class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
   final SupabaseClient _supabaseClient = Supabase.instance.client;
-  Map<String, dynamic>?
-      boardingHouseDetails; // Storage for boarding house details
-  bool isLoading = true; // track if the boarding house details are loading
+  Map<String, dynamic>? boardingHouseDetails;
+  List<Map<String, dynamic>> rooms = [];
+  bool isLoading = true;
+  bool isRoomsLoading = true;
   bool _isBookmarked = false;
 
   @override
   void initState() {
     super.initState();
     _getBHDetails(); // get boarding house details when the page loads
+    _getRooms();
   }
 
   // get building details from the Supabase backend
@@ -48,6 +50,27 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
       print('Error fetching boarding house details: $e');
       setState(() {
         isLoading = false;
+      });
+    }
+  }
+
+  // function to fetch rooms from the database based in build_id
+  Future<void> _getRooms() async {
+    try {
+      final response = await _supabaseClient
+          .from('ROOMS')
+          .select('room_id, room_name, room_description, room_price')
+          .eq('build_id', widget.buildId);
+
+      setState(() {
+        rooms = List<Map<String, dynamic>>.from(
+            response); // storage for fetched data
+        isRoomsLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching rooms: $e');
+      setState(() {
+        isRoomsLoading = false;
       });
     }
   }
@@ -169,7 +192,7 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                     ),
                     const SizedBox(height: 16),
                     DefaultTabController(
-                      length: 2, // two tabs: Details and Rooms
+                      length: 2,
                       child: Column(
                         children: [
                           const TabBar(
@@ -196,7 +219,7 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                             height: 300,
                             child: TabBarView(
                               children: [
-                                // BH Details Tab Content
+                                // BH Details Tab
                                 Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
@@ -219,18 +242,42 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                                             fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(height: 8),
-                                      ...amenitiesList.map((amenity) => Text(
-                                          '- $amenity')), // list amenities with hyphen
+                                      ...amenitiesList
+                                          .map((amenity) => Text('- $amenity')),
                                     ],
                                   ),
                                 ),
-                                // Room Tab Information
-                                const Center(
-                                  child: Text(
-                                    'Room Information',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
+                                // Rooms Tab
+                                isRoomsLoading
+                                    ? const Center(
+                                        // used loading Icon
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : ListView.builder(
+                                        padding: EdgeInsets.zero,
+                                        itemCount: rooms.length,
+                                        itemBuilder: (context, index) {
+                                          final room = rooms[index];
+                                          return ExpansionTile(
+                                            title: Text(
+                                              room['room_name'],
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16.0),
+                                            ),
+                                            subtitle: Text(
+                                                'Price: ₱${room['room_price']}'),
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(16.0),
+                                                child: Text(
+                                                    room['room_description']),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
                               ],
                             ),
                           ),

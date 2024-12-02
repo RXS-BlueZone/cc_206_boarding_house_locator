@@ -72,7 +72,7 @@ class _HomeTabState extends State<HomeTab> {
               house['name']
                   .toLowerCase()
                   .contains(_searchController.text.toLowerCase()) ||
-              house['description']
+              house['address']
                   .toLowerCase()
                   .contains(_searchController.text.toLowerCase()))
           .toList();

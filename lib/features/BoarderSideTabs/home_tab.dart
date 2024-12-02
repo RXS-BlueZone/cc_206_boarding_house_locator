@@ -203,11 +203,47 @@ class _HomeTabState extends State<HomeTab> {
                             ? const Color.fromARGB(255, 19, 199, 55)
                             : Colors.white,
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         setState(() {
                           boardingHouses[index]['isSaved'] =
                               !boardingHouses[index]['isSaved'];
                         });
+
+                        final userId = _supabaseClient.auth.currentUser!
+                            .id; // get current user ID of user in session
+                        final houseId = boardingHouses[index][
+                            'id']; // select id of boarding house from boardingHouses
+
+                        try {
+                          if (boardingHouses[index]['isSaved']) {
+                            // insert into HOUSE_SAVES table
+                            await _supabaseClient.from('HOUSE_SAVES').insert({
+                              'boarder_id': userId,
+                              'house_id': houseId,
+                            });
+                          } else {
+                            // delete from HOUSE_SAVES
+                            await _supabaseClient
+                                .from('HOUSE_SAVES')
+                                .delete()
+                                .match({
+                              'boarder_id': userId,
+                              'house_id': houseId,
+                            });
+                          }
+                        } catch (e) {
+                          // in a case with error
+                          print('Error saving/removing house: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('An error occurred: $e')),
+                          );
+
+                          // if there's an error, go back to original state
+                          setState(() {
+                            boardingHouses[index]['isSaved'] =
+                                !boardingHouses[index]['isSaved'];
+                          });
+                        }
                       },
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -9,45 +10,59 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   final TextEditingController _searchController = TextEditingController();
+  final SupabaseClient _supabaseClient = Supabase.instance.client;
 
-  List<Map<String, dynamic>> boardingHouses = [
-    // static list of boarding houses
-    {
-      'name': "Students' Haven",
-      'description': 'Near University of Iloilo, with study areas',
-      'rating': 4,
-      'amenities': ['Wi-Fi', 'Air-conditioned', 'Laundry Service'],
-      'image': 'lib/assets/bh1.jpg',
-      'type': 'Room',
-      'isSaved': false,
-    },
-    {
-      'name': 'Rivera Inn',
-      'description': 'Affordable and safe, well-ventilated rooms',
-      'rating': 3,
-      'amenities': ['Wi-Fi', '24/7 Security', 'Free Parking'],
-      'image': 'lib/assets/bh2.jpg',
-      'type': 'Bedspace',
-      'isSaved': false,
-    },
-    {
-      'name': 'Transient House Iloilo',
-      'description': 'Fully furnished rooms for short stays',
-      'rating': 4,
-      'amenities': ['Wi-Fi', 'Air-conditioned'],
-      'image': 'lib/assets/bh3.webp',
-      'type': 'Transient',
-      'isSaved': false,
-    },
-  ];
-
+  List<Map<String, dynamic>> boardingHouses =
+      []; // storage for list containing all the fetched records of boarding houses
   List<Map<String, dynamic>> filteredBoardingHouses =
-      []; // filtered version of boardingHouses for searching
+      []; // filtered version of boardingHouses based on the user’s search input
 
   @override
   void initState() {
     super.initState();
-    filteredBoardingHouses = boardingHouses;
+    _getBoardingHouses();
+  }
+
+  Future<void> _getBoardingHouses() async {
+    try {
+      final response = await _supabaseClient.from('BUILDING').select(
+          'build_id, build_name, build_description, build_rating, build_amenities, build_address, user_id, build_created_at');
+
+      final data = response as List<dynamic>;
+      setState(() {
+        boardingHouses = data.map((item) {
+          final amenities =
+              (item['build_amenities'] ?? '').toString().split(',');
+          final buildName = item['build_name'] ?? 'unknown_building';
+
+          return {
+            'id': item['build_id'] ?? 0,
+            'name': buildName,
+            'description':
+                item['build_description'] ?? 'No description available',
+            'rating': item['build_rating'] ?? 0,
+            'amenities': amenities,
+            'image': getImageURL(
+                buildName), // get image using build_name (build_name = folder name inside bucket)
+            'address': item['build_address'] ?? 'Unknown Address',
+            'isSaved': false,
+          };
+        }).toList();
+
+        filteredBoardingHouses = boardingHouses;
+      });
+    } catch (e) {
+      print('Error fetching boarding houses: $e');
+    }
+  }
+
+  String getImageURL(String buildName) {
+    final storageBucket = _supabaseClient.storage
+        .from('boarding-house-images'); // bucket name for images
+    final response = storageBucket
+        .getPublicUrl("$buildName/buildingProfile.jpg"); // image path
+
+    return response ?? ''; // just a placeholder
   }
 
   void _searchBoardingHouses() {
@@ -90,18 +105,20 @@ class _HomeTabState extends State<HomeTab> {
                 ),
               ),
 
-              // Boarding Houses List
+              // List of Boarding Houses
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ListView.builder(
+                  // ListView.builder for dynamic layout
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: filteredBoardingHouses.length,
                   itemBuilder: (context, index) {
                     final house = filteredBoardingHouses[index];
-                    return createBoardingHouseCards(
+                    return _createBoardingHouseCardList(
+                      // Details to show in card
                       house['name'],
-                      house['description'],
+                      house['address'],
                       house['rating'],
                       house['image'],
                       house['isSaved'],
@@ -117,8 +134,7 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  // BH Cards for listings
-  Widget createBoardingHouseCards(
+  Widget _createBoardingHouseCardList(
     String name,
     String description,
     int rating,
@@ -127,8 +143,15 @@ class _HomeTabState extends State<HomeTab> {
     int index,
   ) {
     return GestureDetector(
+      // Wrapped with gesture detector to make the whole card clickable
       onTap: () {
-        // Navigator.pushNamed(context, ''); // navigate to bh details
+        // Navigator.pushNamed(context, '/', arguments: {
+        //   // Arguments to pass to BH details page (not final)
+        //   'name': name,
+        //   'description': description,
+        //   'rating': rating,
+        //   'image': imagePath,
+        // });
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -140,11 +163,15 @@ class _HomeTabState extends State<HomeTab> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
+                  child: Image.network(
                     imagePath,
                     width: double.infinity,
                     height: 275,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.error,
+                          size: 50, color: Colors.red);
+                    },
                   ),
                 ),
                 Positioned(
@@ -154,11 +181,10 @@ class _HomeTabState extends State<HomeTab> {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(197, 77, 77, 77)
-                              .withOpacity(0.25),
+                          color: const Color.fromARGB(86, 77, 77, 77),
                           spreadRadius: 1,
                           blurRadius: 10,
-                          offset: Offset(0, 0),
+                          offset: const Offset(0, 0),
                         ),
                       ],
                       shape: BoxShape.circle,
@@ -170,14 +196,13 @@ class _HomeTabState extends State<HomeTab> {
                             : Icons.bookmark_border_outlined,
                         size: 30,
                         color: isSaved
-                            ? const Color.fromARGB(255, 16, 224, 58)
-                            : Colors.white, // color change based on like state
+                            ? const Color.fromARGB(255, 19, 199, 55)
+                            : Colors.white,
                       ),
                       onPressed: () {
                         setState(() {
                           boardingHouses[index]['isSaved'] =
-                              !boardingHouses[index]
-                                  ['isSaved']; // toggle like state
+                              !boardingHouses[index]['isSaved'];
                         });
                       },
                     ),
@@ -186,13 +211,15 @@ class _HomeTabState extends State<HomeTab> {
               ],
             ),
             ListTile(
-              title: Text(name,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(
+                name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text(description),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.star, color: Colors.orange, size: 16),
+                  const Icon(Icons.star, color: Colors.orange, size: 16),
                   const SizedBox(width: 5),
                   Text(rating.toString()),
                 ],

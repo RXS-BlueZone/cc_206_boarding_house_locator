@@ -42,11 +42,14 @@ class _SignUpPageState extends State<SignUpPage> {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
     }
+
     final emailValidFormat =
         RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+
     if (!emailValidFormat.hasMatch(value)) {
       return 'Enter a valid email address';
     }
+
     return null;
   }
 
@@ -102,8 +105,8 @@ class _SignUpPageState extends State<SignUpPage> {
     try {
       // Register the user in using Supabase Auth
       final response = await Supabase.instance.client.auth.signUp(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
 
       if (response.user == null) {
@@ -112,8 +115,7 @@ class _SignUpPageState extends State<SignUpPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Registration Failed'),
-              content:
-                  Text(response.error?.message ?? 'Unknown error occurred'),
+              content: Text(response.toString()),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -142,30 +144,30 @@ class _SignUpPageState extends State<SignUpPage> {
           'user_phonenumber': _phoneController.text.trim(),
           'user_type': userType,
         }
-      ]).execute();
+      ]);
 
-      if (insertResponse.error != null) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: Text(
-                'Failed to save user details: ${insertResponse.error?.message ?? 'Unknown error'}',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-        return; // Stop if there was an error
-      }
+      // if (insertResponse.error != null) {
+      //   showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) {
+      //       return AlertDialog(
+      //         title: const Text('Error'),
+      //         content: Text(
+      //           'Failed to save user details: ${insertResponse.error?.message ?? 'Unknown error'}',
+      //         ),
+      //         actions: [
+      //           TextButton(
+      //             onPressed: () {
+      //               Navigator.pop(context);
+      //             },
+      //             child: const Text('OK'),
+      //           ),
+      //         ],
+      //       );
+      //     },
+      //   );
+      //   return; // Stop if there was an error
+      // }
 
       // If successful
       showDialog(

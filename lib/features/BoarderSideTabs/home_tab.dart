@@ -19,7 +19,7 @@ class _HomeTabState extends State<HomeTab> {
       'amenities': ['Wi-Fi', 'Air-conditioned', 'Laundry Service'],
       'image': 'lib/assets/bh1.jpg',
       'type': 'Room',
-      'isLiked': false,
+      'isSaved': false,
     },
     {
       'name': 'Rivera Inn',
@@ -28,7 +28,7 @@ class _HomeTabState extends State<HomeTab> {
       'amenities': ['Wi-Fi', '24/7 Security', 'Free Parking'],
       'image': 'lib/assets/bh2.jpg',
       'type': 'Bedspace',
-      'isLiked': false,
+      'isSaved': false,
     },
     {
       'name': 'Transient House Iloilo',
@@ -37,13 +37,12 @@ class _HomeTabState extends State<HomeTab> {
       'amenities': ['Wi-Fi', 'Air-conditioned'],
       'image': 'lib/assets/bh3.webp',
       'type': 'Transient',
-      'isLiked': false,
+      'isSaved': false,
     },
   ];
 
   List<Map<String, dynamic>> filteredBoardingHouses =
       []; // filtered version of boardingHouses for searching
-  // String selectedCategory = 'All';
 
   @override
   void initState() {
@@ -91,20 +90,6 @@ class _HomeTabState extends State<HomeTab> {
                 ),
               ),
 
-              // Filters Section (for testing)
-              // Padding(
-              //   padding: const EdgeInsets.all(16.0),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       _categoryButton('All'),
-              //       _categoryButton('Bedspace'),
-              //       _categoryButton('Room'),
-              //       _categoryButton('Transient'),
-              //     ],
-              //   ),
-              // ),
-
               // Boarding Houses List
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -119,7 +104,7 @@ class _HomeTabState extends State<HomeTab> {
                       house['description'],
                       house['rating'],
                       house['image'],
-                      house['isLiked'],
+                      house['isSaved'],
                       index,
                     );
                   },
@@ -138,68 +123,83 @@ class _HomeTabState extends State<HomeTab> {
     String description,
     int rating,
     String imagePath,
-    bool isLiked,
+    bool isSaved,
     int index,
   ) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      elevation: 3,
-      margin: const EdgeInsets.only(bottom: 16.0),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  imagePath,
-                  width: double.infinity,
-                  height: 275,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape
-                        .circle, // Make sure the shadow follows the round shape
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      isLiked ? Icons.favorite : Icons.favorite_border_outlined,
-                      size: 30,
-                      color: isLiked
-                          ? const Color.fromARGB(255, 255, 38, 74)
-                          : Colors.white, // color change based on like state
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        boardingHouses[index]['isLiked'] =
-                            !boardingHouses[index]
-                                ['isLiked']; // toggle like state
-                      });
-                    },
-                  ),
-                ),
-              )
-            ],
-          ),
-          ListTile(
-            title:
-                Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text(description),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
+    return GestureDetector(
+      onTap: () {
+        // Navigator.pushNamed(context, ''); // navigate to bh details
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 3,
+        margin: const EdgeInsets.only(bottom: 16.0),
+        child: Column(
+          children: [
+            Stack(
               children: [
-                Icon(Icons.star, color: Colors.orange, size: 16),
-                const SizedBox(width: 5),
-                Text(rating.toString()),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset(
+                    imagePath,
+                    width: double.infinity,
+                    height: 275,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(197, 77, 77, 77)
+                              .withOpacity(0.25),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        isSaved
+                            ? Icons.bookmark
+                            : Icons.bookmark_border_outlined,
+                        size: 30,
+                        color: isSaved
+                            ? const Color.fromARGB(255, 16, 224, 58)
+                            : Colors.white, // color change based on like state
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          boardingHouses[index]['isSaved'] =
+                              !boardingHouses[index]
+                                  ['isSaved']; // toggle like state
+                        });
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
+            ListTile(
+              title: Text(name,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text(description),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.star, color: Colors.orange, size: 16),
+                  const SizedBox(width: 5),
+                  Text(rating.toString()),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -31,8 +31,7 @@ class _HomeTabState extends State<HomeTab> {
       final data = response as List<dynamic>;
       setState(() {
         boardingHouses = data.map((item) {
-          final amenities =
-              (item['build_amenities'] ?? '').toString().split(',');
+          final amenities = (item['build_amenities'] ?? '').toString();
           final buildName = item['build_name'] ?? 'unknown_building';
 
           return {
@@ -117,6 +116,7 @@ class _HomeTabState extends State<HomeTab> {
                     final house = filteredBoardingHouses[index];
                     return _createBoardingHouseCardList(
                       // Details to show in card
+                      house['id'],
                       house['name'],
                       house['address'],
                       house['rating'],
@@ -135,6 +135,7 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   Widget _createBoardingHouseCardList(
+    int id,
     String name,
     String description,
     int rating,
@@ -144,15 +145,12 @@ class _HomeTabState extends State<HomeTab> {
   ) {
     return GestureDetector(
       // Wrapped with gesture detector to make the whole card clickable
-      onTap: () {
-        // Navigator.pushNamed(context, '/', arguments: {
-        //   // Arguments to pass to BH details page (not final)
-        //   'name': name,
-        //   'description': description,
-        //   'rating': rating,
-        //   'image': imagePath,
-        // });
-      },
+      onTap: () => Navigator.pushNamed(
+        context,
+        '/bhdetails',
+        arguments: {'id': id}, // Pass only the build_id
+      ),
+
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 3,

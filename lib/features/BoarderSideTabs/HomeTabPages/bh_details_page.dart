@@ -75,6 +75,15 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
     }
   }
 
+  // reused getImageUrl in getting BH image
+  String getRoomImageURL(String buildName, String roomName) {
+    final supabaseBucket =
+        _supabaseClient.storage.from('boarding-house-images');
+
+    final response = supabaseBucket.getPublicUrl("$buildName/$roomName.jpg");
+    return response ?? ''; // Return a valid image URL or a placeholder
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -258,6 +267,11 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                                         itemCount: rooms.length,
                                         itemBuilder: (context, index) {
                                           final room = rooms[index];
+                                          final roomImage = getRoomImageURL(
+                                              details['build_name'],
+                                              room[
+                                                  'room_name']); // pass build_name and room_name
+
                                           return ExpansionTile(
                                             title: Text(
                                               room['room_name'],
@@ -271,8 +285,31 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.all(16.0),
-                                                child: Text(
-                                                    room['room_description']),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Image.network(
+                                                      roomImage,
+                                                      height: 150,
+                                                      width: double.infinity,
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder: (context,
+                                                          error, stackTrace) {
+                                                        return const Icon(
+                                                            Icons.error,
+                                                            size: 50,
+                                                            color: Colors.red);
+                                                      },
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                      room['room_description'],
+                                                      style: const TextStyle(
+                                                          fontSize: 14.0),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           );

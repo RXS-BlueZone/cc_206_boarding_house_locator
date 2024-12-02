@@ -56,9 +56,9 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   String getImageURL(String buildName) {
-    final storageBucket = _supabaseClient.storage
+    final supabaseBucket = _supabaseClient.storage
         .from('boarding-house-images'); // bucket name for images
-    final response = storageBucket
+    final response = supabaseBucket
         .getPublicUrl("$buildName/buildingProfile.jpg"); // image path
 
     return response ?? ''; // just a placeholder

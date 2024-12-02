@@ -143,12 +143,18 @@ class _HomeTabState extends State<HomeTab> {
     bool isSaved,
     int index,
   ) {
+    final imagePath = getImageURL(name);
+
     return GestureDetector(
       // Wrapped with gesture detector to make the whole card clickable
       onTap: () => Navigator.pushNamed(
         context,
         '/bhdetails',
-        arguments: {'id': id}, // Pass only the build_id
+        arguments: {
+          'id': id, // Pass the build_id
+          'image':
+              getImageURL(name), // Pass the dynamically generated image URL
+        },
       ),
 
       child: Card(

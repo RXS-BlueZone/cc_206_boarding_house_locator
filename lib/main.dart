@@ -42,8 +42,9 @@ class MainApp extends StatelessWidget {
           final args = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>;
           return BoardingHouseDetailsPage(
-              buildId:
-                  args['id']); // modalRoute for passing build_id from home tab
+            buildId: args['id'], // id argument
+            imagePath: args['image'], // image argument
+          );
         },
       },
     );

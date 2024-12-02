@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BoardingHouseDetailsPage extends StatefulWidget {
-  final int buildId;
+  // Required parameters passed to this page
+  final int buildId; // ID of the building
+  final String
+      imagePath; // URL/path to the building's image from Supabase buckets
 
-  const BoardingHouseDetailsPage({Key? key, required this.buildId})
+  // to initialize with required parameters
+  const BoardingHouseDetailsPage(
+      {Key? key, required this.buildId, required this.imagePath})
       : super(key: key);
 
   @override
@@ -14,26 +19,29 @@ class BoardingHouseDetailsPage extends StatefulWidget {
 
 class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
   final SupabaseClient _supabaseClient = Supabase.instance.client;
-  Map<String, dynamic>? boardingHouseDetails;
-  bool isLoading = true;
+  Map<String, dynamic>?
+      boardingHouseDetails; // Storage for boarding house details
+  bool isLoading = true; // track if the boarding house details are loading
+  bool _isBookmarked = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchBoardingHouseDetails();
+    _getBHDetails(); // get boarding house details when the page loads
   }
 
-  Future<void> _fetchBoardingHouseDetails() async {
+  // get building details from the Supabase backend
+  Future<void> _getBHDetails() async {
     try {
       final response = await _supabaseClient
           .from('BUILDING')
           .select(
-              'build_id, build_name, build_description, build_rating, build_amenities, build_address, user_id, build_created_at')
-          .eq('build_id', widget.buildId)
-          .single();
+              'build_id, build_name, build_description, build_rating, build_amenities, build_address')
+          .eq('build_id', widget.buildId) // filter by building ID
+          .single(); // to retrieve just a single row
 
       setState(() {
-        boardingHouseDetails = response;
+        boardingHouseDetails = response; // Store the fetched data
         isLoading = false;
       });
     } catch (e) {
@@ -47,6 +55,7 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
+      // for loading spinner as the data is fetched
       return Scaffold(
         appBar: AppBar(title: const Text('Boarding House Details')),
         body: const Center(child: CircularProgressIndicator()),
@@ -60,40 +69,177 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
       );
     }
 
-    final details = boardingHouseDetails!;
+    final details = boardingHouseDetails!; // non-nullable shortcut for details
     final amenitiesString = details['build_amenities'] ?? '';
-    final amenitiesList =
-        amenitiesString.split(',').map((e) => e.trim()).toList();
+    final amenitiesList = amenitiesString
+        .split(',')
+        .map((e) => e.trim())
+        .toList(); // parsing amenities into a list
 
     return Scaffold(
-      appBar: AppBar(title: Text(details['build_name'])),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              details['build_name'],
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              details['build_address'],
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            Text('Description: ${details['build_description']}'),
-            const SizedBox(height: 16),
-            const Text('Amenities:'),
-            const SizedBox(height: 8),
-            ...amenitiesList.map((amenity) => Text('- $amenity')).toList(),
-            const SizedBox(height: 16),
-            Row(
+            Stack(
               children: [
-                const Icon(Icons.star, color: Colors.orange),
-                const SizedBox(width: 5),
-                Text(details['build_rating'].toString()),
+                Image.network(
+                  widget.imagePath,
+                  width: double.infinity,
+                  height: 250,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    // if there is an error fetching the image, display error icon
+                    return const Icon(Icons.error, size: 50, color: Colors.red);
+                  },
+                ),
+                Positioned(
+                  top: 16.0,
+                  right: 16.0,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isBookmarked = !_isBookmarked; // Toggle bookmark state
+                      });
+                    },
+                    child: Icon(
+                      _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                      color: _isBookmarked
+                          ? const Color(0xFF1EDB92)
+                          : const Color.fromARGB(255, 255, 255, 255),
+                      size: 40.0,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 16.0,
+                  left: 16.0,
+                  child: IconButton(
+                    icon:
+                        const Icon(Icons.arrow_back, size: 30.0), // Back Button
+                    color: Colors.white,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                Positioned(
+                  bottom: 16.0,
+                  left: 16.0,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.star, color: Colors.orange, size: 24),
+                      const SizedBox(width: 8),
+                      Text(
+                        details['build_rating'].toString(),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
+            ),
+            // BH details card (including rooms)
+            Card(
+              margin: const EdgeInsets.all(16.0),
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      details['build_name'],
+                      style: const TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      details['build_address'],
+                      style:
+                          const TextStyle(fontSize: 16.0, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 16),
+                    DefaultTabController(
+                      length: 2, // two tabs: Details and Rooms
+                      child: Column(
+                        children: [
+                          const TabBar(
+                            labelColor: Colors.black,
+                            unselectedLabelColor: Colors.grey,
+                            indicatorColor: Colors.green,
+                            tabs: [
+                              Tab(
+                                child: Text(
+                                  'Details',
+                                  style: TextStyle(fontSize: 16.0),
+                                ),
+                              ),
+                              Tab(
+                                child: Text(
+                                  'Rooms',
+                                  style: TextStyle(fontSize: 16.0),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            height: 300,
+                            child: TabBarView(
+                              children: [
+                                // BH Details Tab Content
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Description:',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(details['build_description']),
+                                      const SizedBox(height: 16),
+                                      const Text(
+                                        'Amenities:',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      ...amenitiesList.map((amenity) => Text(
+                                          '- $amenity')), // list amenities with hyphen
+                                    ],
+                                  ),
+                                ),
+                                // Room Tab Information
+                                const Center(
+                                  child: Text(
+                                    'Room Information',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

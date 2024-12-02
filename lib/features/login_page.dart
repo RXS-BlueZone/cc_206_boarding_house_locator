@@ -1,4 +1,4 @@
-import 'package:cc_206_boarding_house_locator/features/Boarderhomepage(placeholder).dart';
+import 'package:cc_206_boarding_house_locator/features/BoarderSideNav.dart';
 import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
 import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
 import 'package:flutter/material.dart';

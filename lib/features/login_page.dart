@@ -179,12 +179,10 @@ class _LoginPageState extends State<LoginPage> {
                               .from('USERS')
                               .select('user_email, user_password, user_type')
                               .eq('user_email', email)
-                              .eq('user_password', password)
-                              .execute();
+                              .eq('user_password', password);
 
-                          if (response.data != null &&
-                              response.data.isNotEmpty) {
-                            final userType = response.data[0]['user_type'];
+                          if (response.isNotEmpty) {
+                            final userType = response[0]['user_type'];
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Login successful!'),

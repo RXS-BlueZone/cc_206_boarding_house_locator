@@ -5,10 +5,10 @@ class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
 
   @override
-  State<HomeTab> createState() => _HomeTabState();
+  State<HomeTab> createState() => HomeTabState();
 }
 
-class _HomeTabState extends State<HomeTab> {
+class HomeTabState extends State<HomeTab> {
   final TextEditingController _searchController = TextEditingController();
   final SupabaseClient _supabaseClient = Supabase.instance.client;
 
@@ -158,15 +158,33 @@ class _HomeTabState extends State<HomeTab> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.grey.shade200,
+                    fillColor: const Color.fromARGB(103, 255, 255, 255),
                     hintText: 'Search for boarding houses...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
+                    hintStyle: const TextStyle(
+                      color: Color.fromARGB(158, 158, 158, 158),
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Color.fromARGB(255, 156, 156, 156),
+                    ),
+                    focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: const BorderSide(
+                        color: Colors.green, // when focused
+                        width: 2.0,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: Color.fromARGB(121, 76, 175, 79),
+                        width: 2,
+                      ),
                     ),
                   ),
-                  onChanged: (_) => _searchBoardingHouses(),
+                  onChanged: (_) => _searchBoardingHouses,
                 ),
               ),
 
@@ -174,16 +192,13 @@ class _HomeTabState extends State<HomeTab> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ValueListenableBuilder<List<Map<String, dynamic>>>(
-                  valueListenable: _HomeTabState.boardingHousesNotifier,
+                  valueListenable: HomeTabState.boardingHousesNotifier,
                   builder: (context, boardingHouses, child) {
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: filteredBoardingHouses.length,
                       itemBuilder: (context, index) {
-                        if (index >= filteredBoardingHouses.length) {
-                          return SizedBox(); // Avoid rendering invalid indices
-                        }
                         final house = filteredBoardingHouses[index];
                         return _createBoardingHouseCardList(
                           // Details to show in the card

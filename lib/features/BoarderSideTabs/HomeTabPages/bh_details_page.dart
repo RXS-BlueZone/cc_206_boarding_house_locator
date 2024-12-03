@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../home_tab.dart'; // Adjust this import based on your file structure
 
 class BoardingHouseDetailsPage extends StatefulWidget {
   // Required parameters passed to this page
@@ -40,11 +41,11 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
           .from('BUILDING')
           .select(
               'build_id, build_name, build_description, build_rating, build_amenities, build_address')
-          .eq('build_id', widget.buildId) // filter by building ID
-          .single(); // to retrieve just a single row
+          .eq('build_id', widget.buildId)
+          .single();
 
       setState(() {
-        boardingHouseDetails = response; // Store the fetched data
+        boardingHouseDetails = response;
         isLoading = false;
       });
     } catch (e) {
@@ -124,24 +125,6 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                     // if there is an error fetching the image, display error icon
                     return const Icon(Icons.error, size: 50, color: Colors.red);
                   },
-                ),
-                Positioned(
-                  top: 16.0,
-                  right: 16.0,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isSaved = !isSaved;
-                      });
-                    },
-                    child: Icon(
-                      isSaved ? Icons.bookmark : Icons.bookmark_border,
-                      color: isSaved
-                          ? const Color(0xFF1EDB92)
-                          : const Color.fromARGB(255, 255, 255, 255),
-                      size: 40.0,
-                    ),
-                  ),
                 ),
                 Positioned(
                   top: 16.0,

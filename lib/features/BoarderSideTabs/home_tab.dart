@@ -17,22 +17,43 @@ class _HomeTabState extends State<HomeTab> {
   List<Map<String, dynamic>> filteredBoardingHouses =
       []; // filtered version of boardingHouses based on the user’s search input
 
+  static final ValueNotifier<
+      List<
+          Map<String, dynamic>>> boardingHousesNotifier = ValueNotifier(
+      []); // value notifier - share the boardingHouses list across multiple screens and notify listeners when changes occur
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _getBoardingHouses();
   }
 
   Future<void> _getBoardingHouses() async {
     try {
-      final response = await _supabaseClient.from('BUILDING').select(
-          'build_id, build_name, build_description, build_rating, build_amenities, build_address, user_id, build_created_at');
+      final userId = _supabaseClient.auth.currentUser!.id;
+
+      final response = await _supabaseClient.from('BUILDING').select('''
+            build_id, 
+            build_name, 
+            build_description, 
+            build_rating, 
+            build_amenities, 
+            build_address, 
+            user_id, 
+            build_created_at, 
+            HOUSE_SAVES(boarder_id)
+            ''');
 
       final data = response as List<dynamic>;
+
       setState(() {
         boardingHouses = data.map((item) {
           final amenities = (item['build_amenities'] ?? '').toString();
           final buildName = item['build_name'] ?? 'unknown_building';
+
+          // Check if the current user has saved a particular building
+          final isSaved = (item['HOUSE_SAVES'] as List)
+              .any((save) => save['boarder_id'] == userId);
 
           return {
             'id': item['build_id'] ?? 0,
@@ -41,17 +62,62 @@ class _HomeTabState extends State<HomeTab> {
                 item['build_description'] ?? 'No description available',
             'rating': item['build_rating'] ?? 0,
             'amenities': amenities,
-            'image': getImageURL(
-                buildName), // get image using build_name (build_name = folder name inside bucket)
+            'image': getImageURL(buildName),
             'address': item['build_address'] ?? 'Unknown Address',
-            'isSaved': false,
+            'isSaved': isSaved,
           };
         }).toList();
 
-        filteredBoardingHouses = boardingHouses;
+        // sort boarding houses by build_id when displaying
+        boardingHouses
+            .sort((a, b) => (a['id'] as int).compareTo(b['id'] as int));
+        filteredBoardingHouses = List.from(
+            boardingHouses); // to maintain the original order even after saving or switching screens
       });
     } catch (e) {
       print('Error fetching boarding houses: $e');
+    }
+  }
+
+//
+  Future<void> _getSaveStatus(int houseId, int index) async {
+    final userId = _supabaseClient.auth.currentUser!.id; // Current user ID
+
+    try {
+      if (!boardingHouses[index]['isSaved']) {
+        // Insert if not saved
+        await _supabaseClient.from('HOUSE_SAVES').insert({
+          'boarder_id': userId,
+          'house_id': houseId,
+        });
+      } else {
+        // Delete if saved
+        await _supabaseClient.from('HOUSE_SAVES').delete().match({
+          'boarder_id': userId,
+          'house_id': houseId,
+        });
+      }
+
+      // Update state for both lists
+      setState(() {
+        boardingHouses[index]['isSaved'] = !boardingHouses[index]['isSaved'];
+
+        // Update filtered list if necessary
+        filteredBoardingHouses = boardingHouses
+            .where((house) =>
+                house['name']
+                    .toLowerCase()
+                    .contains(_searchController.text.toLowerCase()) ||
+                house['address']
+                    .toLowerCase()
+                    .contains(_searchController.text.toLowerCase()))
+            .toList();
+      });
+    } catch (e) {
+      print('Error toggling save state: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
     }
   }
 
@@ -107,22 +173,29 @@ class _HomeTabState extends State<HomeTab> {
               // List of Boarding Houses
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: ListView.builder(
-                  // ListView.builder for dynamic layout
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: filteredBoardingHouses.length,
-                  itemBuilder: (context, index) {
-                    final house = filteredBoardingHouses[index];
-                    return _createBoardingHouseCardList(
-                      // Details to show in card
-                      house['id'],
-                      house['name'],
-                      house['address'],
-                      house['rating'],
-                      house['image'],
-                      house['isSaved'],
-                      index,
+                child: ValueListenableBuilder<List<Map<String, dynamic>>>(
+                  valueListenable: _HomeTabState.boardingHousesNotifier,
+                  builder: (context, boardingHouses, child) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: filteredBoardingHouses.length,
+                      itemBuilder: (context, index) {
+                        if (index >= filteredBoardingHouses.length) {
+                          return SizedBox(); // Avoid rendering invalid indices
+                        }
+                        final house = filteredBoardingHouses[index];
+                        return _createBoardingHouseCardList(
+                          // Details to show in the card
+                          house['id'],
+                          house['name'],
+                          house['address'],
+                          house['rating'],
+                          house['image'],
+                          house['isSaved'],
+                          index,
+                        );
+                      },
                     );
                   },
                 ),
@@ -195,56 +268,18 @@ class _HomeTabState extends State<HomeTab> {
                     ),
                     child: IconButton(
                       icon: Icon(
-                        isSaved
-                            ? Icons.bookmark
-                            : Icons.bookmark_border_outlined,
+                        boardingHouses[index]['isSaved']
+                            ? Icons.bookmark // If saved, show filled icon
+                            : Icons
+                                .bookmark_border_outlined, // If not saved, show outline
                         size: 30,
-                        color: isSaved
-                            ? const Color.fromARGB(255, 19, 199, 55)
-                            : Colors.white,
+                        color: boardingHouses[index]['isSaved']
+                            ? const Color.fromARGB(
+                                255, 19, 199, 55) // Saved color
+                            : Colors.white, // Not saved color
                       ),
-                      onPressed: () async {
-                        setState(() {
-                          boardingHouses[index]['isSaved'] =
-                              !boardingHouses[index]['isSaved'];
-                        });
-
-                        final userId = _supabaseClient.auth.currentUser!
-                            .id; // get current user ID of user in session
-                        final houseId = boardingHouses[index][
-                            'id']; // select id of boarding house from boardingHouses
-
-                        try {
-                          if (boardingHouses[index]['isSaved']) {
-                            // insert into HOUSE_SAVES table
-                            await _supabaseClient.from('HOUSE_SAVES').insert({
-                              'boarder_id': userId,
-                              'house_id': houseId,
-                            });
-                          } else {
-                            // delete from HOUSE_SAVES
-                            await _supabaseClient
-                                .from('HOUSE_SAVES')
-                                .delete()
-                                .match({
-                              'boarder_id': userId,
-                              'house_id': houseId,
-                            });
-                          }
-                        } catch (e) {
-                          // in a case with error
-                          print('Error saving/removing house: $e');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('An error occurred: $e')),
-                          );
-
-                          // if there's an error, go back to original state
-                          setState(() {
-                            boardingHouses[index]['isSaved'] =
-                                !boardingHouses[index]['isSaved'];
-                          });
-                        }
-                      },
+                      onPressed: () =>
+                          _getSaveStatus(boardingHouses[index]['id'], index),
                     ),
                   ),
                 ),

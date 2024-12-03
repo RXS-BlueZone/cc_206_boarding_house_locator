@@ -54,8 +54,7 @@ class _LoginPageState extends State<LoginPage> {
 
                         // Email Text Field
                         SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.925, // to occupy 92.5% of screen width
+                          width: MediaQuery.of(context).size.width * 0.925,
                           height: 50,
                           child: TextFormField(
                             controller: _emailController,
@@ -86,8 +85,7 @@ class _LoginPageState extends State<LoginPage> {
 
                         // Password Text Field
                         SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.925, // to occupy 92.5% of screen width
+                          width: MediaQuery.of(context).size.width * 0.925,
                           height: 50,
                           child: TextFormField(
                             controller: _passwordController,
@@ -174,15 +172,24 @@ class _LoginPageState extends State<LoginPage> {
                         final password = _passwordController.text;
 
                         try {
-                          // to check the USERS table for a user with the provided email and password
-                          final response = await Supabase.instance.client
-                              .from('USERS')
-                              .select('user_email, user_password, user_type')
-                              .eq('user_email', email)
-                              .eq('user_password', password);
+                          final response = await Supabase.instance.client.auth
+                              .signInWithPassword(
+                                  email: email, password: password);
 
-                          if (response.isNotEmpty) {
-                            final userType = response[0]['user_type'];
+                          if (response.session != null) {
+                            // Login successful
+                            final user = response.user;
+
+                            // Fetch additional user information if needed
+                            final userTypeResponse = await Supabase
+                                .instance.client
+                                .from('USERS')
+                                .select('user_type')
+                                .eq('user_email', email)
+                                .single();
+
+                            final userType = userTypeResponse['user_type'];
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Login successful!'),
@@ -190,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             );
 
-                            // Go to respective homepage based on user type
+                            // Navigate to respective homepage
                             if (userType == 'Boarder') {
                               Navigator.pushReplacement(
                                 context,
@@ -204,7 +211,6 @@ class _LoginPageState extends State<LoginPage> {
                                     builder: (context) => OwnerHomePage()),
                               );
                             } else {
-                              // Handle invalid user type (for debugging purposes)
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
@@ -214,7 +220,6 @@ class _LoginPageState extends State<LoginPage> {
                               );
                             }
                           } else {
-                            // Invalid credentials (invalid email or password)
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -224,7 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                             );
                           }
                         } catch (e) {
-                          // Handle errors during the login process
+                          // Handle authentication errors
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Error: ${e.toString()}'),

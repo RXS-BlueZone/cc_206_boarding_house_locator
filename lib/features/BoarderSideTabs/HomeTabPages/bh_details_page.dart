@@ -19,11 +19,12 @@ class BoardingHouseDetailsPage extends StatefulWidget {
 
 class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
   final SupabaseClient _supabaseClient = Supabase.instance.client;
-  Map<String, dynamic>? boardingHouseDetails;
+  Map<String, dynamic>?
+      boardingHouseDetails; // storage for fetched data of boarding house details
   List<Map<String, dynamic>> rooms = [];
   bool isLoading = true;
   bool isRoomsLoading = true;
-  bool _isBookmarked = false;
+  bool isSaved = false;
 
   @override
   void initState() {
@@ -130,12 +131,12 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isBookmarked = !_isBookmarked; // Toggle bookmark state
+                        isSaved = !isSaved;
                       });
                     },
                     child: Icon(
-                      _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                      color: _isBookmarked
+                      isSaved ? Icons.bookmark : Icons.bookmark_border,
+                      color: isSaved
                           ? const Color(0xFF1EDB92)
                           : const Color.fromARGB(255, 255, 255, 255),
                       size: 40.0,

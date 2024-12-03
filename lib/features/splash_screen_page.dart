@@ -27,15 +27,16 @@ class _SplashScreenState extends State<SplashScreen> {
         // For Debugging: Log the session
         print('Session restored: ${session.toJson()}');
 
-        // Check if session is valid by querying the USERS table
-        final email = session.user.email;
-        if (email != null) {
+        // Check if session is valid by querying the USERS table using user_id
+        final userId = session.user.id;
+        if (userId != null) {
           final response = await Supabase.instance.client
               .from('USERS')
-              .select('user_email')
-              .eq('user_email', email);
+              .select('user_id')
+              .eq('user_id', userId) // Use user_id instead of email
+              .single(); // Expect a single record
 
-          if (response.isNotEmpty) {
+          if (response != null) {
             // Go to homepage if the user exists
             Navigator.pushReplacementNamed(context, '/homepage');
             return;

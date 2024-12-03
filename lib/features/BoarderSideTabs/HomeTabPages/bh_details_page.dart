@@ -40,7 +40,7 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
       final response = await _supabaseClient
           .from('BUILDING')
           .select(
-              'build_id, build_name, build_description, build_rating, build_amenities, build_address')
+              'build_id, build_name, build_description, build_rating , build_amenities, build_address')
           .eq('build_id', widget.buildId)
           .single();
 
@@ -127,8 +127,8 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                   },
                 ),
                 Positioned(
-                  top: 16.0,
-                  left: 16.0,
+                  top: 16,
+                  left: 16,
                   child: IconButton(
                     icon:
                         const Icon(Icons.arrow_back, size: 30.0), // Back Button
@@ -139,14 +139,14 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                   ),
                 ),
                 Positioned(
-                  bottom: 16.0,
-                  left: 16.0,
+                  bottom: 16,
+                  left: 16,
                   child: Row(
                     children: [
                       const Icon(Icons.star, color: Colors.orange, size: 24),
                       const SizedBox(width: 8),
                       Text(
-                        details['build_rating'].toString(),
+                        details['build_rating']?.toString() ?? '0',
                         style: const TextStyle(
                           fontSize: 18,
                           color: Colors.white,

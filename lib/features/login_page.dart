@@ -172,15 +172,15 @@ class _LoginPageState extends State<LoginPage> {
                         final password = _passwordController.text;
 
                         try {
+                          // sign in with email and password
                           final response = await Supabase.instance.client.auth
                               .signInWithPassword(
-                                  email: email, password: password);
+                            email: email,
+                            password: password,
+                          );
 
+                          // checkif login was successful
                           if (response.session != null) {
-                            // Login successful
-                            final user = response.user;
-
-                            // Fetch additional user information if needed
                             final userTypeResponse = await Supabase
                                 .instance.client
                                 .from('USERS')
@@ -197,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             );
 
-                            // Navigate to respective homepage
+                            // go to the respective homepage based on user type
                             if (userType == 'Boarder') {
                               Navigator.pushReplacement(
                                 context,
@@ -229,13 +229,25 @@ class _LoginPageState extends State<LoginPage> {
                             );
                           }
                         } catch (e) {
-                          // Handle authentication errors
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Error: ${e.toString()}'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          final error = e.toString().toLowerCase();
+                          if (error.contains('invalid login credentials')) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Invalid email or password. Please try again.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          } else {
+                            // general error message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'An unexpected error occurred. Please try again later.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
                       },
                       child: const Text(

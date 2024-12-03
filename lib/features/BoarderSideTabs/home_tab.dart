@@ -81,11 +81,11 @@ class HomeTabState extends State<HomeTab> {
 
 //
   Future<void> _getSaveStatus(int houseId, int index) async {
-    final userId = _supabaseClient.auth.currentUser!.id; // Current user ID
+    final userId = _supabaseClient.auth.currentUser!.id;
 
     try {
       if (!boardingHouses[index]['isSaved']) {
-        // Insert if not saved
+        // insert if not saved
         await _supabaseClient.from('HOUSE_SAVES').insert({
           'boarder_id': userId,
           'house_id': houseId,
@@ -98,11 +98,11 @@ class HomeTabState extends State<HomeTab> {
         });
       }
 
-      // Update state for both lists
+      // Update state
       setState(() {
         boardingHouses[index]['isSaved'] = !boardingHouses[index]['isSaved'];
 
-        // Update filtered list if necessary
+        // update filtered list
         filteredBoardingHouses = boardingHouses
             .where((house) =>
                 house['name']
@@ -153,7 +153,7 @@ class HomeTabState extends State<HomeTab> {
             children: [
               // Search Bar
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.5),
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
@@ -190,7 +190,7 @@ class HomeTabState extends State<HomeTab> {
 
               // List of Boarding Houses
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.5),
                 child: ValueListenableBuilder<List<Map<String, dynamic>>>(
                   valueListenable: HomeTabState.boardingHousesNotifier,
                   builder: (context, boardingHouses, child) {
@@ -248,7 +248,7 @@ class HomeTabState extends State<HomeTab> {
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 3,
-        margin: const EdgeInsets.only(bottom: 16.0),
+        margin: const EdgeInsets.only(bottom: 16.5),
         child: Column(
           children: [
             Stack(

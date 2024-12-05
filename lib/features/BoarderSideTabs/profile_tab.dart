@@ -91,89 +91,92 @@ class _ProfileTabState extends State<ProfileTab> {
       );
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Profile image
-          _buildProfileImage(),
-          const SizedBox(height: 16),
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Profile image
+            _buildProfileImage(),
+            const SizedBox(height: 16),
 
-          // User's full name
-          Text(
-            userData!['user_fullname'] ?? 'Unknown Name',
-            style: const TextStyle(
-              fontSize: 24,
-              color: Colors.green,
-              fontWeight: FontWeight.bold,
+            // User's full name
+            Text(
+              userData!['user_fullname'] ?? 'Unknown Name',
+              style: const TextStyle(
+                fontSize: 24,
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          // User details in cards
-          Card(
-            elevation: 3,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              title: const Text('Email'),
-              subtitle: Text(userData!['user_email'] ?? 'Unknown Email'),
-              leading: const Icon(Icons.email, color: Colors.green),
-            ),
-          ),
-          Card(
-            elevation: 3,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              leading: const Icon(Icons.phone, color: Colors.green),
-              title: const Text('Phone Number'),
-              subtitle:
-                  Text(userData!['user_phonenumber'] ?? 'Unknown Contact'),
-            ),
-          ),
-
-          const SizedBox(height: 32),
-
-          // Logout button with gradient
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                await Supabase.instance.client.auth.signOut();
-                Navigator.pushReplacementNamed(context, '/login');
-              } catch (e) {
-                print('Error logging out: $e');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error logging out: $e')),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            // User details in cards
+            Card(
+              elevation: 3,
+              margin: const EdgeInsets.symmetric(vertical: 8),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              backgroundColor: Colors.green,
-              elevation: 5,
+              child: ListTile(
+                title: const Text('Email'),
+                subtitle: Text(userData!['user_email'] ?? 'Unknown Email'),
+                leading: const Icon(Icons.email, color: Colors.green),
+              ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.logout, color: Colors.white),
-                SizedBox(width: 8),
-                Text(
-                  'Logout',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+            Card(
+              elevation: 3,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListTile(
+                leading: const Icon(Icons.phone, color: Colors.green),
+                title: const Text('Phone Number'),
+                subtitle:
+                    Text(userData!['user_phonenumber'] ?? 'Unknown Contact'),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Logout button with gradient
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  await Supabase.instance.client.auth.signOut();
+                  Navigator.pushReplacementNamed(context, '/login');
+                } catch (e) {
+                  print('Error logging out: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error logging out: $e')),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ],
+                backgroundColor: Colors.green,
+                elevation: 5,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.logout, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    'Logout',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

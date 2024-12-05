@@ -111,205 +111,211 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
         .toList(); // parsing amenities into a list
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                Image.network(
-                  widget.imagePath,
-                  width: double.infinity,
-                  height: 250,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    // if there is an error fetching the image, display error icon
-                    return const Icon(Icons.error, size: 50, color: Colors.red);
-                  },
-                ),
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  child: IconButton(
-                    icon:
-                        const Icon(Icons.arrow_back, size: 30.0), // Back Button
-                    color: Colors.white,
-                    onPressed: () {
-                      Navigator.pop(context);
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  Image.network(
+                    widget.imagePath,
+                    width: double.infinity,
+                    height: 250,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      // if there is an error fetching the image, display error icon
+                      return const Icon(Icons.error,
+                          size: 50, color: Colors.red);
                     },
                   ),
+                  Positioned(
+                    top: 16,
+                    left: 16,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back,
+                          size: 30.0), // Back Button
+                      color: Colors.white,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 16,
+                    left: 16,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.orange, size: 24),
+                        const SizedBox(width: 8),
+                        Text(
+                          details['build_rating']?.toString() ?? '0',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              // BH details card (including rooms)
+              Card(
+                margin: const EdgeInsets.all(16.0),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
                 ),
-                Positioned(
-                  bottom: 16,
-                  left: 16,
-                  child: Row(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.star, color: Colors.orange, size: 24),
-                      const SizedBox(width: 8),
                       Text(
-                        details['build_rating']?.toString() ?? '0',
+                        details['build_name'],
                         style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
+                          fontSize: 24.0,
                           fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        details['build_address'],
+                        style:
+                            const TextStyle(fontSize: 16.0, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 16),
+                      DefaultTabController(
+                        length: 2,
+                        child: Column(
+                          children: [
+                            const TabBar(
+                              labelColor: Colors.black,
+                              unselectedLabelColor: Colors.grey,
+                              indicatorColor: Colors.green,
+                              tabs: [
+                                Tab(
+                                  child: Text(
+                                    'Details',
+                                    style: TextStyle(fontSize: 16.0),
+                                  ),
+                                ),
+                                Tab(
+                                  child: Text(
+                                    'Rooms',
+                                    style: TextStyle(fontSize: 16.0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              height: 300,
+                              child: TabBarView(
+                                children: [
+                                  // BH Details Tab
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Description:',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(details['build_description']),
+                                        const SizedBox(height: 16),
+                                        const Text(
+                                          'Amenities:',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        ...amenitiesList.map(
+                                            (amenity) => Text('- $amenity')),
+                                      ],
+                                    ),
+                                  ),
+                                  // Rooms Tab
+                                  isRoomsLoading
+                                      ? const Center(
+                                          // used loading Icon
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : ListView.builder(
+                                          padding: EdgeInsets.zero,
+                                          itemCount: rooms.length,
+                                          itemBuilder: (context, index) {
+                                            final room = rooms[index];
+                                            final roomImage = getRoomImageURL(
+                                                details['build_name'],
+                                                room[
+                                                    'room_name']); // pass build_name and room_name
+
+                                            return ExpansionTile(
+                                              title: Text(
+                                                room['room_name'],
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16.0),
+                                              ),
+                                              subtitle: Text(
+                                                  'Price: ₱${room['room_price']}'),
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      16.0),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Image.network(
+                                                        roomImage,
+                                                        height: 150,
+                                                        width: double.infinity,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                            error, stackTrace) {
+                                                          return const Icon(
+                                                              Icons.error,
+                                                              size: 50,
+                                                              color:
+                                                                  Colors.red);
+                                                        },
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Text(
+                                                        room[
+                                                            'room_description'],
+                                                        style: const TextStyle(
+                                                            fontSize: 14.0),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-            // BH details card (including rooms)
-            Card(
-              margin: const EdgeInsets.all(16.0),
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      details['build_name'],
-                      style: const TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      details['build_address'],
-                      style:
-                          const TextStyle(fontSize: 16.0, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 16),
-                    DefaultTabController(
-                      length: 2,
-                      child: Column(
-                        children: [
-                          const TabBar(
-                            labelColor: Colors.black,
-                            unselectedLabelColor: Colors.grey,
-                            indicatorColor: Colors.green,
-                            tabs: [
-                              Tab(
-                                child: Text(
-                                  'Details',
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                              ),
-                              Tab(
-                                child: Text(
-                                  'Rooms',
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            height: 300,
-                            child: TabBarView(
-                              children: [
-                                // BH Details Tab
-                                Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Description:',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(details['build_description']),
-                                      const SizedBox(height: 16),
-                                      const Text(
-                                        'Amenities:',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      ...amenitiesList
-                                          .map((amenity) => Text('- $amenity')),
-                                    ],
-                                  ),
-                                ),
-                                // Rooms Tab
-                                isRoomsLoading
-                                    ? const Center(
-                                        // used loading Icon
-                                        child: CircularProgressIndicator(),
-                                      )
-                                    : ListView.builder(
-                                        padding: EdgeInsets.zero,
-                                        itemCount: rooms.length,
-                                        itemBuilder: (context, index) {
-                                          final room = rooms[index];
-                                          final roomImage = getRoomImageURL(
-                                              details['build_name'],
-                                              room[
-                                                  'room_name']); // pass build_name and room_name
-
-                                          return ExpansionTile(
-                                            title: Text(
-                                              room['room_name'],
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16.0),
-                                            ),
-                                            subtitle: Text(
-                                                'Price: ₱${room['room_price']}'),
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(16.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Image.network(
-                                                      roomImage,
-                                                      height: 150,
-                                                      width: double.infinity,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context,
-                                                          error, stackTrace) {
-                                                        return const Icon(
-                                                            Icons.error,
-                                                            size: 50,
-                                                            color: Colors.red);
-                                                      },
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text(
-                                                      room['room_description'],
-                                                      style: const TextStyle(
-                                                          fontSize: 14.0),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

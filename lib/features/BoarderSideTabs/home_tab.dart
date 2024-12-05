@@ -195,7 +195,7 @@ class HomeTabState extends State<HomeTab> {
                   valueListenable: HomeTabState.boardingHousesNotifier,
                   builder: (context, boardingHouses, child) {
                     return ListView.builder(
-                      shrinkWrap: true,
+                      shrinkWrap: true, // to adjust size based on its content
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: filteredBoardingHouses.length,
                       itemBuilder: (context, index) {

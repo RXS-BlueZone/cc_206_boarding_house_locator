@@ -116,128 +116,134 @@ class _SavedTabState extends State<SavedTab> {
   Widget build(BuildContext context) {
     // show loading spinner while data is being fetched
     if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
+      return SafeArea(
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     }
 
     if (savedBoardingHouses.isEmpty) {
-      return const Center(
-        child: Text(
-          'No saved boarding houses yet.',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      return SafeArea(
+        child: const Center(
+          child: Text(
+            'No saved boarding houses yet.',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
         ),
       );
     }
 
     // list of saved BH
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      itemCount: savedBoardingHouses.length,
-      itemBuilder: (context, index) {
-        final house = savedBoardingHouses[index];
-        return InkWell(
-          onTap: () {
-            //  to details page of selected boarding house
-            Navigator.pushNamed(
-              context,
-              '/bhdetails',
-              arguments: {
-                'id': house['id'],
-                'image': house['image'],
-              },
-            );
-          },
-          child: Card(
-            elevation: 4,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Image Section in the card
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    bottomLeft: Radius.circular(16),
-                  ),
-                  child: Image.network(
-                    house['image'],
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 120,
-                        height: 120,
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.error,
-                            color:
-                                Colors.red), // icon if ever there is no image
-                      );
-                    },
-                  ),
-                ),
-                // Details Section of BH
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          house['name'],
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          house['address'],
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(Icons.star,
-                                color: Colors.orange, size: 16),
-                            const SizedBox(width: 4),
-                            Text(
-                              house['rating'].toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.bookmark_remove,
-                                color: Colors.red, // unsave icon
-                              ),
-                              onPressed: () => _unsaveBH(house['id']),
-                            ),
-                          ],
-                        ),
-                      ],
+    return SafeArea(
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        itemCount: savedBoardingHouses.length,
+        itemBuilder: (context, index) {
+          final house = savedBoardingHouses[index];
+          return InkWell(
+            onTap: () {
+              //  to details page of selected boarding house
+              Navigator.pushNamed(
+                context,
+                '/bhdetails',
+                arguments: {
+                  'id': house['id'],
+                  'image': house['image'],
+                },
+              );
+            },
+            child: Card(
+              elevation: 4,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Image Section in the card
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
+                    ),
+                    child: Image.network(
+                      house['image'],
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 120,
+                          height: 120,
+                          color: Colors.grey.shade200,
+                          child: const Icon(Icons.error,
+                              color:
+                                  Colors.red), // icon if ever there is no image
+                        );
+                      },
                     ),
                   ),
-                ),
-              ],
+                  // Details Section of BH
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            house['name'],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            house['address'],
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(Icons.star,
+                                  color: Colors.orange, size: 16),
+                              const SizedBox(width: 4),
+                              Text(
+                                house['rating'].toString(),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.bookmark_remove,
+                                  color: Colors.red, // unsave icon
+                                ),
+                                onPressed: () => _unsaveBH(house['id']),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

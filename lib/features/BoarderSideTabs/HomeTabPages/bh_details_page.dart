@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../home_tab.dart'; // Adjust this import based on your file structure
+// ignore: unused_import
+import '../home_tab.dart';
 
 class BoardingHouseDetailsPage extends StatefulWidget {
   // Required parameters passed to this page
@@ -23,8 +24,10 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
   Map<String, dynamic>?
       boardingHouseDetails; // storage for fetched data of boarding house details
   List<Map<String, dynamic>> rooms = [];
+  Map<String, dynamic>? ownerDetails; // storage for fetched owner details
   bool isLoading = true;
   bool isRoomsLoading = true;
+  bool isOwnerLoading = true;
   bool isSaved = false;
 
   @override
@@ -32,6 +35,7 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
     super.initState();
     _getBHDetails(); // get boarding house details when the page loads
     _getRooms();
+    _getOwnerDetails(); // fetch owner details
   }
 
   // get building details from the Supabase backend
@@ -56,7 +60,7 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
     }
   }
 
-  // function to fetch rooms from the database based in build_id
+  // function to fetch rooms from the database based on build_id
   Future<void> _getRooms() async {
     try {
       final response = await _supabaseClient
@@ -77,18 +81,49 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
     }
   }
 
+  // get owner details associated with the build_id to be displayed
+  Future<void> _getOwnerDetails() async {
+    try {
+      // relation to the BUILDING table
+      final response = await _supabaseClient
+          .from('BUILDING')
+          .select(
+            'USERS:user_id(user_fullname, user_phonenumber, user_email)',
+          )
+          .eq('build_id', widget.buildId)
+          .single();
+
+      if (response['USERS'] != null) {
+        setState(() {
+          ownerDetails = response['USERS'];
+          isOwnerLoading = false;
+        });
+      } else {
+        setState(() {
+          ownerDetails = null;
+          isOwnerLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching owner details: $e'); // debugging
+      setState(() {
+        isOwnerLoading = false;
+      });
+    }
+  }
+
   // reused getImageUrl in getting BH image
   String getRoomImageURL(String buildName, String roomName) {
     final supabaseBucket =
         _supabaseClient.storage.from('boarding-house-images');
 
     final response = supabaseBucket.getPublicUrl("$buildName/$roomName.jpg");
-    return response ?? ''; // Return a valid image URL or a placeholder
+    return response;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
+    if (isLoading || isOwnerLoading) {
       // for loading spinner as the data is fetched
       return Scaffold(
         appBar: AppBar(title: const Text('Boarding House Details')),
@@ -160,6 +195,76 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                   ),
                 ],
               ),
+              // Owner Details Section
+              // Owner Details Section
+              Card(
+                margin: const EdgeInsets.all(16),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Owner Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (ownerDetails != null) ...[
+                        Row(
+                          children: [
+                            const Icon(Icons.person, color: Colors.grey),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Name: ${ownerDetails?['user_fullname'] ?? 'N/A'}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.phone, color: Colors.grey),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Phone: ${ownerDetails?['user_phonenumber'] ?? 'N/A'}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.email, color: Colors.grey),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Email: ${ownerDetails?['user_email'] ?? 'N/A'}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ] else
+                        const Text(
+                          'Owner details not available',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+
               // BH details card (including rooms)
               Card(
                 margin: const EdgeInsets.all(16),

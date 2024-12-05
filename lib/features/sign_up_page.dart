@@ -134,8 +134,8 @@ class _SignUpPageState extends State<SignUpPage> {
       final userId = response.user!.id;
 
       // Insert additional user details into 'USERS' table
-      final insertResponse =
-          await Supabase.instance.client.from('USERS').insert([
+      // final insertResponse =
+      await Supabase.instance.client.from('USERS').insert([
         {
           'user_id': userId, // ID from the Supabase Auth
           'user_fullname': _nameController.text.trim(),

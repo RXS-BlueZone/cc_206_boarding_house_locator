@@ -29,29 +29,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
         // Check if session is valid by querying the USERS table using user_id
         final userId = session.user.id;
-        if (userId != null) {
-          final response = await Supabase.instance.client
-              .from('USERS')
-              .select('user_id, user_type') // Fetch user_id and user_type
-              .eq('user_id', userId)
-              .single(); // Expect a single record
+        final response = await Supabase.instance.client
+            .from('USERS')
+            .select('user_id, user_type') // Fetch user_id and user_type
+            .eq('user_id', userId)
+            .single(); // Expect a single record
 
-          if (response != null) {
-            // Check the user_type and navigate accordingly
-            final userType = response['user_type'];
-            if (userType == 'Boarder') {
-              Navigator.pushReplacementNamed(context, '/boarderHome');
-            } else if (userType == 'Owner') {
-              Navigator.pushReplacementNamed(context, '/ownerHome');
-            }
-            // else {
-            //   // Handle unexpected user_type
-            //   print('Unexpected user_type: $userType');
-            //   Navigator.pushReplacementNamed(context, '/login');
-            // }
-            return;
-          }
+        // Check the user_type and navigate accordingly
+        final userType = response['user_type'];
+        if (userType == 'Boarder') {
+          Navigator.pushReplacementNamed(context, '/boarderHome');
+        } else if (userType == 'Owner') {
+          Navigator.pushReplacementNamed(context, '/ownerHome');
         }
+        // else {
+        //   // Handle unexpected user_type
+        //   print('Unexpected user_type: $userType');
+        //   Navigator.pushReplacementNamed(context, '/login');
+        // }
+        return;
       }
 
       // Go to login if no valid session or user is found

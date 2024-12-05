@@ -127,7 +127,7 @@ class HomeTabState extends State<HomeTab> {
     final response = supabaseBucket
         .getPublicUrl("$buildName/buildingProfile.jpg"); // image path
 
-    return response ?? ''; // just a placeholder
+    return response;
   }
 
   void _searchBoardingHouses() {

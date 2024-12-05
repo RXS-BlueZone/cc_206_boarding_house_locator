@@ -42,7 +42,7 @@ class _ProfileTabState extends State<ProfileTab> {
     }
   }
 
-  Widget _buildProfileImage() {
+  Widget _createProfilePlaceholderImage() {
     return Container(
       width: 100,
       height: 100,
@@ -98,10 +98,9 @@ class _ProfileTabState extends State<ProfileTab> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Profile image
-            _buildProfileImage(),
+            _createProfilePlaceholderImage(),
             const SizedBox(height: 16),
 
-            // User's full name
             Text(
               userData!['user_fullname'] ?? 'Unknown Name',
               style: const TextStyle(
@@ -112,7 +111,7 @@ class _ProfileTabState extends State<ProfileTab> {
             ),
             const SizedBox(height: 16),
 
-            // User details in cards
+            // User details in cards (field-like)
             Card(
               elevation: 3,
               margin: const EdgeInsets.symmetric(vertical: 8),

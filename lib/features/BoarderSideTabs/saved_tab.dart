@@ -109,7 +109,7 @@ class _SavedTabState extends State<SavedTab> {
         .from('boarding-house-images'); // Image bucket from supabase
     final response =
         supabaseBucket.getPublicUrl("$buildName/buildingProfile.jpg");
-    return response ?? '';
+    return response;
   }
 
   @override

@@ -258,19 +258,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               prefixIcon:
                                   const Icon(Icons.person, color: Colors.green),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.name,
@@ -290,19 +290,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               prefixIcon:
                                   const Icon(Icons.email, color: Colors.green),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.emailAddress,
@@ -322,19 +322,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               prefixIcon:
                                   const Icon(Icons.phone, color: Colors.green),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.phone,
@@ -368,19 +368,19 @@ class _SignUpPageState extends State<SignUpPage> {
                                 },
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.visiblePassword,
@@ -415,19 +415,19 @@ class _SignUpPageState extends State<SignUpPage> {
                                 },
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.visiblePassword,
@@ -440,7 +440,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

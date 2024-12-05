@@ -188,7 +188,7 @@ class _SavedTabState extends State<SavedTab> {
                   // Details Section of BH
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

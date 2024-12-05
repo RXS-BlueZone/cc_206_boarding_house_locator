@@ -9,7 +9,7 @@ class RoleSelectionPage extends StatefulWidget {
 
 class _RoleSelectionPageState extends State<RoleSelectionPage> {
   bool showTapText = false;
-  double tapTextOpacity = 1.0; // initial opacity after tapping
+  double tapTextOpacity = 1; // initial opacity after tapping
 
   @override
   Widget build(BuildContext context) {
@@ -49,18 +49,18 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                           setState(() {
                             showTapText = true;
                             tapTextOpacity =
-                                1.0; // Show the text instantly and reset opacity to 1
+                                1; // Show the text instantly and reset opacity to 1
                           });
                           // to fade out the text after 2 seconds by changing the opacity
                           Future.delayed(const Duration(seconds: 2), () {
                             setState(() {
-                              tapTextOpacity = 0.0;
+                              tapTextOpacity = 0;
                             });
                           });
                         },
                         child: SizedBox(
-                          width: 300.0,
-                          height: 300.0,
+                          width: 300,
+                          height: 300,
                           child: Image.asset(
                             'lib/assets/role_selection_illustration.png',
                             fit: BoxFit.contain,
@@ -77,7 +77,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16),
                   child: Stack(
                     clipBehavior: Clip
                         .none, // to ensure the text isn't clipped in the stack
@@ -90,13 +90,13 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 side: const BorderSide(
-                                    color: Colors.green, width: 2.0),
+                                    color: Colors.green, width: 2),
                                 foregroundColor: Colors.black,
                                 backgroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0, vertical: 14.0),
+                                    horizontal: 24, vertical: 14),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
                               onPressed: () {
@@ -104,7 +104,8 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                                 Navigator.pushNamed(
                                   context,
                                   '/signup',
-                                  arguments: 'Boarder',  // to pass 'Boarder' as userType argument
+                                  arguments:
+                                      'Boarder', // to pass 'Boarder' as userType argument
                                 );
                               },
                               child: const Text(
@@ -123,16 +124,17 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.green,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0, vertical: 14.0),
+                                    horizontal: 24, vertical: 14),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
                               onPressed: () {
                                 Navigator.pushNamed(
                                   context,
                                   '/signup',
-                                  arguments: 'Owner',  // to pass 'Owner' as userType argument
+                                  arguments:
+                                      'Owner', // to pass 'Owner' as userType argument
                                 );
                               },
                               child: const Text(

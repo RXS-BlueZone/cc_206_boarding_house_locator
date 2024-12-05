@@ -132,8 +132,8 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                     top: 16,
                     left: 16,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back,
-                          size: 30.0), // Back Button
+                      icon:
+                          const Icon(Icons.arrow_back, size: 30), // Back Button
                       color: Colors.white,
                       onPressed: () {
                         Navigator.pop(context);
@@ -162,20 +162,20 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
               ),
               // BH details card (including rooms)
               Card(
-                margin: const EdgeInsets.all(16.0),
+                margin: const EdgeInsets.all(16),
                 elevation: 4,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         details['build_name'],
                         style: const TextStyle(
-                          fontSize: 24.0,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -183,7 +183,7 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                       Text(
                         details['build_address'],
                         style:
-                            const TextStyle(fontSize: 16.0, color: Colors.grey),
+                            const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
                       DefaultTabController(
@@ -198,13 +198,13 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                                 Tab(
                                   child: Text(
                                     'Details',
-                                    style: TextStyle(fontSize: 16.0),
+                                    style: TextStyle(fontSize: 16),
                                   ),
                                 ),
                                 Tab(
                                   child: Text(
                                     'Rooms',
-                                    style: TextStyle(fontSize: 16.0),
+                                    style: TextStyle(fontSize: 16),
                                   ),
                                 ),
                               ],
@@ -216,7 +216,7 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                                 children: [
                                   // BH Details Tab
                                   Padding(
-                                    padding: const EdgeInsets.all(16.0),
+                                    padding: const EdgeInsets.all(16),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -263,14 +263,14 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                                                 room['room_name'],
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
-                                                    fontSize: 16.0),
+                                                    fontSize: 16),
                                               ),
                                               subtitle: Text(
                                                   'Price: ₱${room['room_price']}'),
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      16.0),
+                                                  padding:
+                                                      const EdgeInsets.all(16),
                                                   child: Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
@@ -295,7 +295,7 @@ class _BoardingHouseDetailsPageState extends State<BoardingHouseDetailsPage> {
                                                         room[
                                                             'room_description'],
                                                         style: const TextStyle(
-                                                            fontSize: 14.0),
+                                                            fontSize: 14),
                                                       ),
                                                     ],
                                                   ),

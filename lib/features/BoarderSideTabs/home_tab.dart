@@ -173,7 +173,7 @@ class HomeTabState extends State<HomeTab> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(
                         color: Colors.green, // when focused
-                        width: 2.0,
+                        width: 2,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
@@ -184,7 +184,7 @@ class HomeTabState extends State<HomeTab> {
                       ),
                     ),
                   ),
-                  onChanged: (_) => _searchBoardingHouses,
+                  onChanged: (_) => _searchBoardingHouses(),
                 ),
               ),
 

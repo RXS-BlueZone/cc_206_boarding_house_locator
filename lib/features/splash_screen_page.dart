@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   // Handle routing after the splash screen
   Future<void> _goTo() async {
     await Future.delayed(const Duration(
-        seconds: 3)); // Delay for splash screen before displaying login
+        seconds: 2)); // Delay for splash screen before displaying login
 
     try {
       final session = Supabase.instance.client.auth.currentSession;
@@ -32,13 +32,23 @@ class _SplashScreenState extends State<SplashScreen> {
         if (userId != null) {
           final response = await Supabase.instance.client
               .from('USERS')
-              .select('user_id')
-              .eq('user_id', userId) // Use user_id instead of email
+              .select('user_id, user_type') // Fetch user_id and user_type
+              .eq('user_id', userId)
               .single(); // Expect a single record
 
           if (response != null) {
-            // Go to homepage if the user exists
-            Navigator.pushReplacementNamed(context, '/homepage');
+            // Check the user_type and navigate accordingly
+            final userType = response['user_type'];
+            if (userType == 'Boarder') {
+              Navigator.pushReplacementNamed(context, '/boarderHome');
+            } else if (userType == 'Owner') {
+              Navigator.pushReplacementNamed(context, '/ownerHome');
+            }
+            // else {
+            //   // Handle unexpected user_type
+            //   print('Unexpected user_type: $userType');
+            //   Navigator.pushReplacementNamed(context, '/login');
+            // }
             return;
           }
         }

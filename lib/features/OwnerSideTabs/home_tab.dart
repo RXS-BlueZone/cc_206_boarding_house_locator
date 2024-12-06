@@ -706,7 +706,7 @@ class _HomeTabState extends State<HomeTab> {
               onPressed: () {
                 Navigator.pushNamed(
                   context,
-                  './add_boarding_house',
+                  '/add_boarding_house',
                   arguments: widget.userId,
                 );
               },

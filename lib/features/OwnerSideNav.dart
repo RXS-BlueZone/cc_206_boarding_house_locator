@@ -2,7 +2,6 @@ import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/home_tab.da
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/profile_tab.dart';
 import 'package:flutter/material.dart';
 
-
 class OwnerHome extends StatefulWidget {
   final String userId;
   const OwnerHome({super.key, required this.userId});
@@ -12,34 +11,34 @@ class OwnerHome extends StatefulWidget {
 }
 
 class _OwnerHomeState extends State<OwnerHome> {
-  int _currentIndex = 0; // to track the selected tab
-  late String userId; // Declare but don't initialize here
+  int _currentIndex = 0;
+  late String userId;
 
-  late final List<Widget> _boarderScreens; // Initialize later
+  late final List<Widget> _boarderScreens;
 
   @override
   void initState() {
     super.initState();
-    userId = widget.userId; // Initialize userId with widget.userId
+    userId = widget.userId;
     _boarderScreens = [
-      HomeTab(userId: userId), // Now userId is accessible
-      // Add other screens for Saved and Profile if necessary
-  ProfileTab(),
-      // Placeholder
+      HomeTab(userId: userId),
+      ProfileTab(
+        userId: userId,
+      ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _boarderScreens[_currentIndex], // Show the selected screen
+      body: _boarderScreens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.green, // Color when selected
-        unselectedItemColor: Colors.grey, // Color when not selected
+        selectedItemColor: Colors.green,
+        unselectedItemColor: Colors.grey,
         onTap: (index) {
           setState(() {
-            _currentIndex = index; // Update selected tab on tap
+            _currentIndex = index;
           });
         },
         items: [

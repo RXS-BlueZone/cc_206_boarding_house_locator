@@ -1,3 +1,4 @@
+import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/add_rooms.dart';
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/update_boarding_house.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -309,7 +310,13 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
                             color: Colors.black,
                             size: 16,
                           ),
-                          onPressed: () {}),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddRooms(
+                                        buildId: buildId, buildName: name)));
+                          }),
                     ),
                   ),
                 ),

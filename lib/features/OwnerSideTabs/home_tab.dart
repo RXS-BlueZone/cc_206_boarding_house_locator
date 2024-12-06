@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 import 'dart:math';
+import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/boarding_house_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
-      url:
-          'https://wwnayjgntdptacsbsnus.supabase.co', // Replace with your Supabase URL
+      url: 'https://wwnayjgntdptacsbsnus.supabase.co',
       anonKey:
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3bmF5amdudGRwdGFjc2JzbnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI5NTU0MzMsImV4cCI6MjA0ODUzMTQzM30.w3E77UKpHnnhpe7Q3IEBXJhMdB3UP7Fvux9PQf7dxi0');
   runApp(const HomeTab(userId: ''));
@@ -19,7 +19,6 @@ class HomeTab extends StatefulWidget {
   final String userId;
 
   const HomeTab({super.key, required this.userId});
-  // , required this.userFullname
 
   @override
   State<HomeTab> createState() => _HomeTabState();
@@ -43,7 +42,7 @@ class _HomeTabState extends State<HomeTab> {
           .eq('user_id', widget.userId)
           .single();
 
-      //to set the users information in the database to the screen
+      //  to set the users information in the database to the screen
       if (response.isNotEmpty) {
         setState(() {
           userFullName = response['user_fullname'];
@@ -117,9 +116,9 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   Future<void> _initializeData() async {
-    await fetchUserData(); // Ensure user data is fetched first
+    await fetchUserData();
     supabase = Supabase.instance.client;
-    //set up the databse buckets to gain access to the media
+
     final bucketfolder = 'uploads';
     final bucketName = 'user-images';
     final random = Random();
@@ -179,7 +178,7 @@ class _HomeTabState extends State<HomeTab> {
                   decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20), // No rounding
+                        bottomLeft: Radius.circular(20),
                         bottomRight: Radius.circular(20),
                       )),
                   child: Padding(
@@ -212,10 +211,9 @@ class _HomeTabState extends State<HomeTab> {
                                     return ClipOval(
                                       child: Image.network(
                                         imageUrl,
-                                        width: 80, // Adjust width as needed
-                                        height: 80, // Adjust height as needed
-                                        fit:
-                                            BoxFit.cover, // Set the desired fit
+                                        width: 80,
+                                        height: 80,
+                                        fit: BoxFit.cover,
                                       ),
                                     );
                                   }
@@ -225,7 +223,7 @@ class _HomeTabState extends State<HomeTab> {
                           ),
                         ),
                         FutureBuilder(
-                            future: supabase // fetch the user datausing userId
+                            future: supabase
                                 .from('USERS')
                                 .select(
                                     'user_fullname, user_phonenumber, user_email, user_type')
@@ -315,7 +313,6 @@ class _HomeTabState extends State<HomeTab> {
                                   builder: (BuildContext context) {
                                     return Padding(
                                       padding: EdgeInsets.only(
-                                        // Add padding to avoid overlap with the keyboard
                                         bottom: MediaQuery.of(context)
                                             .viewInsets
                                             .bottom,
@@ -422,7 +419,7 @@ class _HomeTabState extends State<HomeTab> {
                                                                   255,
                                                                   105,
                                                                   105,
-                                                                  105)), // Sets the border color when not focused
+                                                                  105)),
                                                         ),
                                                         focusedBorder:
                                                             OutlineInputBorder(
@@ -553,9 +550,8 @@ class _HomeTabState extends State<HomeTab> {
                                                               checkEmail(
                                                                   emailController
                                                                       .text);
-                                                          // a boloean used t call the email check function
 
-                                                          if (fullnameController // makes sure that all the fileds are filled
+                                                          if (fullnameController
                                                                   .text
                                                                   .isEmpty &&
                                                               emailController
@@ -579,7 +575,6 @@ class _HomeTabState extends State<HomeTab> {
                                                             return;
                                                           }
                                                           if (!emailChecker) {
-                                                            // Show error message for invalid email
                                                             ScaffoldMessenger
                                                                     .of(context)
                                                                 .showSnackBar(
@@ -599,7 +594,6 @@ class _HomeTabState extends State<HomeTab> {
                                                                   phoneController
                                                                       .text) ==
                                                               null) {
-                                                            // Show error message for invalid phone number
                                                             ScaffoldMessenger
                                                                     .of(context)
                                                                 .showSnackBar(
@@ -696,7 +690,8 @@ class _HomeTabState extends State<HomeTab> {
                   child: SizedBox(
                     width: 450,
                     height: 620,
-                    child: Text(""),
+                    child: BoardingHouseLists(
+                        userId: widget.userId, refresh: refreshBoardingHouses),
                   ),
                 ),
               ]),
@@ -712,7 +707,7 @@ class _HomeTabState extends State<HomeTab> {
                 Navigator.pushNamed(
                   context,
                   './add_boarding_house',
-                  arguments: widget.userId, // Pass the userId as an argument
+                  arguments: widget.userId,
                 );
               },
             ),

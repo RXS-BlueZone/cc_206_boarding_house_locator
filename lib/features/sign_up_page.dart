@@ -22,6 +22,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final _nameController = TextEditingController();
 
+  bool isAgreed = false;
+
   String userType =
       ''; // storage for user type passed from the role selection as arguments
 
@@ -448,9 +450,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Checkbox(
-                          value: true, // just for placeholder
+                          value: isAgreed, // just for placeholder
                           onChanged: (value) {
-                            // Checkbox logic (not yet implemented)
+                            setState(() {
+                              isAgreed = value!; // Update the state
+                            });
                           },
                           activeColor: Colors.green,
                         ),
@@ -466,11 +470,13 @@ class _SignUpPageState extends State<SignUpPage> {
 
                     // Register Button
                     ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          _registerUser();
-                        }
-                      },
+                      onPressed: isAgreed
+                          ? () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                _registerUser();
+                              }
+                            }
+                          : null,
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           minimumSize: const Size(370, 50),

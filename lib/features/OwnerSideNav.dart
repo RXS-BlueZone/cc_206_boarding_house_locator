@@ -2,34 +2,59 @@ import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/home_tab.da
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/profile_tab.dart';
 import 'package:flutter/material.dart';
 
-class OwnerHomepage extends StatefulWidget {
-  // Optional constructor if you want to pass additional arguments
-  const OwnerHomepage({Key? key}) : super(key: key);
+
+class OwnerHome extends StatefulWidget {
+  final String userId;
+  const OwnerHome({super.key, required this.userId});
 
   @override
-  _OwnerHomepageState createState() => _OwnerHomepageState();
+  _OwnerHomeState createState() => _OwnerHomeState();
 }
 
-class _OwnerHomepageState extends State<OwnerHomepage> {
-  int _currentIndex = 0; // Track the selected tab
+class _OwnerHomeState extends State<OwnerHome> {
+  int _currentIndex = 0; // to track the selected tab
+  late String userId; // Declare but don't initialize here
 
-  // Define the screens for each tab
-  final List<Widget> _ownerScreens = [HomeTab(), ProfileTab()];
+  late final List<Widget> _boarderScreens; // Initialize later
+
+  @override
+  void initState() {
+    super.initState();
+    userId = widget.userId; // Initialize userId with widget.userId
+    _boarderScreens = [
+      HomeTab(userId: userId), // Now userId is accessible
+      // Add other screens for Saved and Profile if necessary
+  ProfileTab(),
+      // Placeholder
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _ownerScreens[_currentIndex], // Show the selected screen
+      body: _boarderScreens[_currentIndex], // Show the selected screen
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
+        selectedItemColor: Colors.green, // Color when selected
+        unselectedItemColor: Colors.grey, // Color when not selected
         onTap: (index) {
           setState(() {
-            _currentIndex = index; // Update selected tab
+            _currentIndex = index; // Update selected tab on tap
           });
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(
+              _currentIndex == 0 ? Icons.home : Icons.home_outlined,
+            ),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              _currentIndex == 2 ? Icons.person : Icons.person_outline,
+            ),
+            label: 'Profile',
+          ),
         ],
       ),
     );

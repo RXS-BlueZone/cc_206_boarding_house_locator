@@ -173,14 +173,13 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () async {
                         final email = _emailController.text.trim();
                         final password = _passwordController.text;
-
                         try {
                           // Query the USERS table to get user details
                           final response = await Supabase.instance.client
                               .from('USERS')
                               .select(
                                   'user_email, user_fullname, user_id, user_type')
-                              .eq('user_email', email)
+                              .eq('user_email, user_id', email)
                               .eq('user_password', password)
                               .maybeSingle();
 
@@ -204,7 +203,9 @@ class _LoginPageState extends State<LoginPage> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => OwnerHomepage()));
+                                      builder: (context) => OwnerHome(
+                                            userId: response['user_id'],
+                                          )));
                             } else {
                               // Handle invalid user type (for debugging purposes)
                               ScaffoldMessenger.of(context).showSnackBar(

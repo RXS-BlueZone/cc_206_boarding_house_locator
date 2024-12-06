@@ -102,8 +102,8 @@ class _SignUpPageState extends State<SignUpPage> {
     try {
       // Register the user in using Supabase Auth
       final response = await Supabase.instance.client.auth.signUp(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
 
       if (response.user == null) {
@@ -112,8 +112,7 @@ class _SignUpPageState extends State<SignUpPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Registration Failed'),
-              content:
-                  Text(response.error?.message ?? 'Unknown error occurred'),
+              content: Text('$response'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -142,7 +141,7 @@ class _SignUpPageState extends State<SignUpPage> {
           'user_phonenumber': _phoneController.text.trim(),
           'user_type': userType,
         }
-      ]).execute();
+      ]);
 
       if (insertResponse.error != null) {
         showDialog(

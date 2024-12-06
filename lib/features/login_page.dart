@@ -1,6 +1,4 @@
-import 'package:cc_206_boarding_house_locator/features/Boarderhomepage(placeholder).dart';
-import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
-import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
+import 'package:cc_206_boarding_house_locator/features/OwnerSideNav.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,6 +15,11 @@ class _LoginPageState extends State<LoginPage> {
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  // Declare variables to store user data
+  String? userEmail;
+  String? userFullname;
+  String? userId;
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +57,7 @@ class _LoginPageState extends State<LoginPage> {
 
                         // Email Text Field
                         SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.925, // to occupy 92.5% of screen width
+                          width: MediaQuery.of(context).size.width * 0.925,
                           height: 50,
                           child: TextFormField(
                             controller: _emailController,
@@ -86,8 +88,7 @@ class _LoginPageState extends State<LoginPage> {
 
                         // Password Text Field
                         SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.925, // to occupy 92.5% of screen width
+                          width: MediaQuery.of(context).size.width * 0.925,
                           height: 50,
                           child: TextFormField(
                             controller: _passwordController,
@@ -174,17 +175,22 @@ class _LoginPageState extends State<LoginPage> {
                         final password = _passwordController.text;
 
                         try {
-                          // to check the USERS table for a user with the provided email and password
+                          // Query the USERS table to get user details
                           final response = await Supabase.instance.client
                               .from('USERS')
-                              .select('user_email, user_password, user_type')
+                              .select(
+                                  'user_email, user_fullname, user_id, user_type')
                               .eq('user_email', email)
                               .eq('user_password', password)
-                              .execute();
+                              .maybeSingle();
 
-                          if (response.data != null &&
-                              response.data.isNotEmpty) {
-                            final userType = response.data[0]['user_type'];
+                          if (response != null) {
+                            // Store user data into variables
+                            userEmail = response['user_email'];
+                            userFullname = response['user_fullname'];
+                            userId = response['user_id'];
+
+                            final userType = response['user_type'];
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Login successful!'),
@@ -194,17 +200,11 @@ class _LoginPageState extends State<LoginPage> {
 
                             // Go to respective homepage based on user type
                             if (userType == 'Boarder') {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => BoarderHomePage()),
-                              );
                             } else if (userType == 'Owner') {
                               Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => OwnerHomePage()),
-                              );
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => OwnerHomepage()));
                             } else {
                               // Handle invalid user type (for debugging purposes)
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -253,14 +253,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RoleSelectionPage(),
-                              ),
-                            );
-                          },
+                          onPressed: () {},
                           child: const Text(
                             "Sign Up",
                             style: TextStyle(

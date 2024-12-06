@@ -1,4 +1,5 @@
 import 'package:cc_206_boarding_house_locator/features/Boarderhomepage(placeholder).dart';
+import 'package:cc_206_boarding_house_locator/features/OwnerSideNav.dart';
 import 'package:cc_206_boarding_house_locator/features/login_page.dart';
 import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
 import 'package:cc_206_boarding_house_locator/features/sign_up_page.dart';
@@ -36,7 +37,7 @@ class MainApp extends StatelessWidget {
               userType: '',
             ),
         '/login': (context) => const LoginPage(),
-        '/homepage': (context) => BoarderHomePage(),
+        '/homepage': (context) => OwnerHomepage(),
       },
     );
   }

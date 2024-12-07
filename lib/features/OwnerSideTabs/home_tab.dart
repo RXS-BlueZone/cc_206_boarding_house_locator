@@ -79,22 +79,77 @@ class _HomeTabState extends State<HomeTab> {
     required String email,
     required String phoneNumber,
   }) async {
-    // Update user details in the USERS table
+    // update phone number only
+    if (fullname.isEmpty && email.isEmpty && phoneNumber.isNotEmpty) {
+      final response = await supabase
+          .from('USERS')
+          .update({
+            'user_phonenumber': phoneNumber,
+          })
+          .eq('user_id', userId)
+          .select();
+      //update the email only
+    } else if (fullname.isEmpty && email.isNotEmpty && phoneNumber.isEmpty) {
+      final response = await supabase
+          .from('USERS')
+          .update({
+            'user_email': email,
+          })
+          .eq('user_id', userId)
+          .select();
+      //update the name only
+    } else if (fullname.isNotEmpty && email.isEmpty && phoneNumber.isEmpty) {
+      final response = await supabase
+          .from('USERS')
+          .update({
+            'user_fullname': fullname,
+          })
+          .eq('user_id', userId)
+          .select();
+      //update both name and email
+    } else if (fullname.isEmpty && email.isNotEmpty && phoneNumber.isNotEmpty) {
+      final response = await supabase
+          .from('USERS')
+          .update({
+            'user_fullname': fullname,
+            'user_email': email,
+          })
+          .eq('user_id', userId)
+          .select();
+      //  update both name and number
+    } else if (fullname.isNotEmpty && email.isEmpty && phoneNumber.isNotEmpty) {
+      final response = await supabase
+          .from('USERS')
+          .update({
+            'user_fullname': fullname,
+            'user_phonenumber': phoneNumber,
+          })
+          .eq('user_id', userId)
+          .select();
+      //  update both email and number
+    } else if (fullname.isEmpty && email.isNotEmpty && fullname.isNotEmpty) {
+      final response = await supabase
+          .from('USERS')
+          .update({
+            'user_email': email,
+            'user_phonenumber': phoneNumber,
+          })
+          .eq('user_id', userId)
+          .select();
+    } else {
+      final response = await supabase
+          .from('USERS')
+          .update({
+            'user_fullname': fullname,
+            'user_email': email,
+            'user_phonenumber': phoneNumber,
+          })
+          .eq('user_id', userId)
+          .select();
 
-    final response = await supabase
-        .from('USERS')
-        .update({
-          'user_fullname': fullname,
-          'user_email': email,
-          'user_phonenumber': phoneNumber,
-        })
-        .eq('user_id', userId)
-        .select();
-
-    print(fullname);
-
-    if (response.isNotEmpty) {
-      throw Exception('Failed to update user details.');
+      if (response.isNotEmpty) {
+        throw Exception('Failed to update user details.');
+      }
     }
   }
 
@@ -546,6 +601,27 @@ class _HomeTabState extends State<HomeTab> {
                                                                   vertical: 16),
                                                         ),
                                                         onPressed: () async {
+                                                          emailController.text =
+                                                              emailController
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? userEmail
+                                                                  : emailController
+                                                                      .text;
+                                                          phoneController
+                                                              .text = phoneController
+                                                                  .text.isEmpty
+                                                              ? userPhoneNumber
+                                                              : phoneController
+                                                                  .text;
+                                                          fullnameController
+                                                                  .text =
+                                                              fullnameController
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? userFullName
+                                                                  : fullnameController
+                                                                      .text;
                                                           bool emailChecker =
                                                               checkEmail(
                                                                   emailController
@@ -580,7 +656,8 @@ class _HomeTabState extends State<HomeTab> {
                                                                 .showSnackBar(
                                                               SnackBar(
                                                                 content: Text(
-                                                                    "Enter a valid email address"),
+                                                                    emailController
+                                                                        .text),
                                                                 backgroundColor:
                                                                     Colors.red,
                                                               ),
@@ -613,14 +690,27 @@ class _HomeTabState extends State<HomeTab> {
                                                             await updateUserDetails(
                                                               userId:
                                                                   widget.userId,
-                                                              fullname:
-                                                                  fullnameController
+                                                              fullname: fullnameController
+                                                                  .text = fullnameController
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? userFullName
+                                                                  : fullnameController
                                                                       .text,
-                                                              email:
+                                                              email: emailController
+                                                                      .text =
                                                                   emailController
-                                                                      .text,
-                                                              phoneNumber:
-                                                                  phoneController
+                                                                          .text
+                                                                          .isEmpty
+                                                                      ? userEmail
+                                                                      : emailController
+                                                                          .text,
+                                                              phoneNumber: phoneController
+                                                                  .text = phoneController
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? userPhoneNumber
+                                                                  : phoneController
                                                                       .text,
                                                             );
 

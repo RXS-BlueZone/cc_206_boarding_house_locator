@@ -1,8 +1,5 @@
-
+import 'package:cc_206_boarding_house_locator/features/BoarderSideNav.dart';
 import 'package:cc_206_boarding_house_locator/features/OwnerSideNav.dart';
-
-// import 'package:cc_206_boarding_house_locator/features/BoarderSideNav.dart';
-// import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
 import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -21,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // Declare variables to store user data
+  // Variables to store user data
   String? userEmail;
   String? userFullname;
   String? userId;
@@ -59,7 +56,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-
                         // Email Text Field
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.925,
@@ -90,7 +86,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-
                         // Password Text Field
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.925,
@@ -135,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-
                         // Forgot Password Link
                         Align(
                           alignment: Alignment.centerRight,
@@ -162,9 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 10),
                     // Login Button
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -178,45 +170,67 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () async {
                         final email = _emailController.text.trim();
                         final password = _passwordController.text;
+
                         try {
+                          // Sign in with Supabase auth
+                          final response = await Supabase.instance.client.auth
+                              .signInWithPassword(
+                            email: email,
+                            password: password,
+                          );
 
-                          // Query the USERS table to get user details
-                          final response = await Supabase.instance.client
-                              .from('USERS')
-                              .select(
-                                  'user_email, user_fullname, user_id, user_type')
-                              .eq('user_email, user_id', email)
-                              .eq('user_password', password)
-                              .maybeSingle();
+                          if (response.session != null) {
+                            // Query the USERS table for additional details
+                            final userDetails = await Supabase.instance.client
+                                .from('USERS')
+                                .select(
+                                    'user_email, user_fullname, user_id, user_type')
+                                .eq('user_email', email)
+                                .maybeSingle();
 
-                          if (response != null) {
-                            // Store user data into variables
-                            userEmail = response['user_email'];
-                            userFullname = response['user_fullname'];
-                            userId = response['user_id'];
+                            if (userDetails != null) {
+                              userEmail = userDetails['user_email'];
+                              userFullname = userDetails['user_fullname'];
+                              userId = userDetails['user_id'];
 
-                            final userType = response['user_type'];
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Login successful!'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
+                              final userType = userDetails['user_type'];
 
-                            // go to the respective homepage based on user type
-                            if (userType == 'Boarder') {
-                            } else if (userType == 'Owner') {
-                              Navigator.pushReplacement(
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Login successful!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+
+                              // go to the respective homepage based on user type
+                              if (userType == 'Boarder') {
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => OwnerHome(
-                                            userId:
-                                                response['user_id'].toString(),
-                                          )));              } else {
+                                      builder: (context) => BoarderHomePage()),
+                                );
+                              } else if (userType == 'Owner') {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => OwnerHomePage(
+                                            userId: userId!,
+                                          )),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Invalid user type. Please contact support.'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                      'Invalid user type. Please contact support.'),
+                                      'User details not found. Please contact support.'),
                                   backgroundColor: Colors.red,
                                 ),
                               );
@@ -241,7 +255,6 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             );
                           } else {
-                            // general error message
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -258,7 +271,6 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 18, fontWeight: FontWeight.w600),
                       ),
                     ),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -271,7 +283,12 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/role_selection');
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RoleSelectionPage(),
+                              ),
+                            );
                           },
                           child: const Text(
                             "Sign Up",

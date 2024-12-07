@@ -2,15 +2,15 @@ import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/home_tab.da
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/profile_tab.dart';
 import 'package:flutter/material.dart';
 
-class OwnerHome extends StatefulWidget {
+class OwnerHomePage extends StatefulWidget {
   final String userId;
-  const OwnerHome({super.key, required this.userId});
+  const OwnerHomePage({super.key, required this.userId});
 
   @override
-  _OwnerHomeState createState() => _OwnerHomeState();
+  _OwnerHomePageState createState() => _OwnerHomePageState();
 }
 
-class _OwnerHomeState extends State<OwnerHome> {
+class _OwnerHomePageState extends State<OwnerHomePage> {
   int _currentIndex = 0;
   late String userId;
 

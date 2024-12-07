@@ -29,55 +29,62 @@ class HomeTabState extends State<HomeTab> {
   }
 
   Future<void> _getBoardingHouses() async {
-    try {
-      final userId = _supabaseClient.auth.currentUser!.id;
-
-      final response = await _supabaseClient.from('BUILDING').select('''
-            build_id, 
-            build_name, 
-            build_description, 
-            build_rating, 
-            build_amenities, 
-            build_address, 
-            user_id, 
-            build_created_at, 
-            HOUSE_SAVES(boarder_id)
-            ''');
-
-      final data = response as List<dynamic>;
-
-      setState(() {
-        boardingHouses = data.map((item) {
-          final amenities = (item['build_amenities'] ?? '').toString();
-          final buildName = item['build_name'] ?? 'unknown_building';
-
-          // Check if the current user has saved a particular building
-          final isSaved = (item['HOUSE_SAVES'] as List)
-              .any((save) => save['boarder_id'] == userId);
-
-          return {
-            'id': item['build_id'] ?? 0,
-            'name': buildName,
-            'description':
-                item['build_description'] ?? 'No description available',
-            'rating': item['build_rating'] ?? 0,
-            'amenities': amenities,
-            'image': getImageURL(buildName),
-            'address': item['build_address'] ?? 'Unknown Address',
-            'isSaved': isSaved,
-          };
-        }).toList();
-
-        // sort boarding houses by build_id when displaying
-        boardingHouses
-            .sort((a, b) => (a['id'] as int).compareTo(b['id'] as int));
-        filteredBoardingHouses = List.from(
-            boardingHouses); // to maintain the original order even after saving or switching screens
-      });
-    } catch (e) {
-      print('Error fetching boarding houses: $e');
+  try {
+    final user = _supabaseClient.auth.currentUser;
+    if (user == null) {
+      print('No user is logged in.');
+      return;
     }
+
+    final response = await _supabaseClient.from('BUILDING').select('''
+      build_id, 
+      build_name, 
+      build_description, 
+      build_rating, 
+      build_amenities, 
+      build_address, 
+      user_id, 
+      build_created_at, 
+      HOUSE_SAVES(boarder_id)
+    ''');
+
+    if (response.isEmpty) {
+      print('No data returned from Supabase.');
+      return;
+    }
+
+    final data = response as List<dynamic>;
+
+    setState(() {
+      boardingHouses = data.map((item) {
+        final amenities = (item['build_amenities'] ?? '').toString();
+        final buildName = item['build_name'] ?? 'unknown_building';
+
+        // Safely handle null `HOUSE_SAVES`
+        final isSaved = (item['HOUSE_SAVES'] ?? [])
+            .any((save) => save['boarder_id'] == user.id);
+
+        return {
+          'id': item['build_id'] ?? 0,
+          'name': buildName,
+          'description': item['build_description'] ?? 'No description available',
+          'rating': item['build_rating'] ?? 0,
+          'amenities': amenities,
+          'image': getImageURL(buildName),
+          'address': item['build_address'] ?? 'Unknown Address',
+          'isSaved': isSaved,
+        };
+      }).toList();
+
+      // sort boarding houses by build_id when displaying
+      boardingHouses.sort((a, b) => (a['id'] as int).compareTo(b['id'] as int));
+      filteredBoardingHouses = List.from(boardingHouses); // to maintain the original order even after saving or switching screens
+    });
+  } catch (e) {
+    print('Error fetching boarding houses: $e');
   }
+}
+
 
 //
   Future<void> _getSaveStatus(int houseId, int index) async {

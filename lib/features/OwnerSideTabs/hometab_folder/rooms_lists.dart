@@ -14,8 +14,7 @@ void main() async {
 class RoomsLists extends StatefulWidget {
   final int buildId;
   final String imagePath;
-  const RoomsLists({Key? key, required this.buildId, required this.imagePath})
-      : super(key: key);
+  const RoomsLists({super.key, required this.buildId, required this.imagePath});
   @override
   State<RoomsLists> createState() => _RoomsListsState();
 }
@@ -47,7 +46,7 @@ class _RoomsListsState extends State<RoomsLists> {
   Future<String> _fetchImageUrl(String bucketName, String filePath) async {
     try {
       final response =
-          await supabase.storage.from(bucketName).getPublicUrl(filePath);
+          supabase.storage.from(bucketName).getPublicUrl(filePath);
 
       if (response.isEmpty) {
         throw Exception('Error fetching image URL');
@@ -58,27 +57,30 @@ class _RoomsListsState extends State<RoomsLists> {
       rethrow;
     }
   }
+Future<void> _getBHDetails() async {
+  try {
+    final response = await _supabaseClient
+        .from('BUILDING')
+        .select(
+            'build_id, build_name, build_description, build_rating, build_amenities, build_address')
+        .eq('build_id', widget.buildId)
+        .single();
 
-  Future<void> _getBHDetails() async {
-    try {
-      final response = await _supabaseClient
-          .from('BUILDING')
-          .select(
-              'build_id, build_name, build_description, build_rating, build_amenities, build_address')
-          .eq('build_id', widget.buildId)
-          .single();
+    setState(() {
+      // Ensure build_rating defaults to 0 if null
+      response['build_rating'] = response['build_rating'] ?? 0;
 
-      setState(() {
-        boardingHouseDetails = response;
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching boarding house details: $e');
-      setState(() {
-        isLoading = false;
-      });
-    }
+      boardingHouseDetails = response;
+      isLoading = false;
+    });
+  } catch (e) {
+    print('Error fetching boarding house details: $e');
+    setState(() {
+      isLoading = false;
+    });
   }
+}
+
 
   // function to fetch rooms from the database based in build_id
   Future<void> _getRooms() async {
@@ -150,7 +152,7 @@ class _RoomsListsState extends State<RoomsLists> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15),
             child: const Text("Are you sure you want to delete this?"),
           ),
           actions: [
@@ -226,10 +228,10 @@ class _RoomsListsState extends State<RoomsLists> {
                     },
                   ),
                   Positioned(
-                    top: 16.0,
-                    left: 16.0,
+                    top: 16,
+                    left: 16,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back, size: 30.0),
+                      icon: const Icon(Icons.arrow_back, size: 30),
                       color: Colors.white,
                       onPressed: () {
                         Navigator.pop(context);
@@ -237,8 +239,8 @@ class _RoomsListsState extends State<RoomsLists> {
                     ),
                   ),
                   Positioned(
-                    bottom: 16.0,
-                    left: 16.0,
+                    bottom: 16,
+                    left: 16,
                     child: Row(
                       children: [
                         const Icon(Icons.star, color: Colors.orange, size: 24),
@@ -258,20 +260,20 @@ class _RoomsListsState extends State<RoomsLists> {
               ),
               // BH details card (including rooms)
               Card(
-                margin: const EdgeInsets.all(16.0),
+                margin: const EdgeInsets.all(16),
                 elevation: 4,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         details['build_name'],
                         style: const TextStyle(
-                          fontSize: 24.0,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -279,7 +281,7 @@ class _RoomsListsState extends State<RoomsLists> {
                       Text(
                         details['build_address'],
                         style:
-                            const TextStyle(fontSize: 16.0, color: Colors.grey),
+                            const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
                       DefaultTabController(
@@ -294,13 +296,13 @@ class _RoomsListsState extends State<RoomsLists> {
                                 Tab(
                                   child: Text(
                                     'Details',
-                                    style: TextStyle(fontSize: 16.0),
+                                    style: TextStyle(fontSize: 16),
                                   ),
                                 ),
                                 Tab(
                                   child: Text(
                                     'Rooms',
-                                    style: TextStyle(fontSize: 16.0),
+                                    style: TextStyle(fontSize: 16),
                                   ),
                                 ),
                               ],
@@ -311,7 +313,7 @@ class _RoomsListsState extends State<RoomsLists> {
                               child: TabBarView(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.all(16.0),
+                                    padding: const EdgeInsets.all(16),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -360,7 +362,7 @@ class _RoomsListsState extends State<RoomsLists> {
                                                       style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
-                                                          fontSize: 16.0),
+                                                          fontSize: 16),
                                                     ),
                                                     SizedBox(
                                                       width: 20,
@@ -437,7 +439,7 @@ class _RoomsListsState extends State<RoomsLists> {
                                                                               decoration: BoxDecoration(
                                                                                   border: Border.all(
                                                                                 color: const Color.fromARGB(255, 105, 105, 105),
-                                                                                width: 1.0,
+                                                                                width: 1,
                                                                               )),
                                                                               child: Center(
                                                                                 child: _webImage == null
@@ -481,7 +483,7 @@ class _RoomsListsState extends State<RoomsLists> {
                                                                                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
                                                                             SizedBox(height: 10),
                                                                             Padding(
-                                                                                padding: EdgeInsets.all(20.0),
+                                                                                padding: EdgeInsets.all(20),
                                                                                 child: Column(
                                                                                   children: [
                                                                                     TextField(
@@ -610,7 +612,7 @@ class _RoomsListsState extends State<RoomsLists> {
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets.all(
-                                                      16.0),
+                                                      16),
                                                   child: Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
@@ -635,7 +637,7 @@ class _RoomsListsState extends State<RoomsLists> {
                                                         room[
                                                             'room_description'],
                                                         style: const TextStyle(
-                                                            fontSize: 14.0),
+                                                            fontSize: 14),
                                                       ),
                                                     ],
                                                   ),

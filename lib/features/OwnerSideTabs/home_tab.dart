@@ -24,12 +24,13 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   Uint8List? _webImage;
-  late final SupabaseClient supabase;
   late Future<String> _imageUrl;
   String userFullName = "";
   String userPhoneNumber = "";
   String userEmail = "";
   String? userType;
+
+  SupabaseClient supabase =  Supabase.instance.client;
 
   // Future function to fetch user data
   Future<void> fetchUserData() async {
@@ -143,7 +144,6 @@ class _HomeTabState extends State<HomeTab> {
           })
           .eq('user_id', userId)
           .select();
-      ;
       if (response.isNotEmpty) {
         throw Exception('Failed to update user details.');
       }
@@ -203,7 +203,7 @@ class _HomeTabState extends State<HomeTab> {
   Future<String> _fetchImageUrl(String bucketName, String filePath) async {
     try {
       final response =
-          await supabase.storage.from(bucketName).getPublicUrl(filePath);
+          supabase.storage.from(bucketName).getPublicUrl(filePath);
 
       if (response.isEmpty) {
         throw Exception('Error fetching image URL');
@@ -306,20 +306,20 @@ class _HomeTabState extends State<HomeTab> {
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 18,
+                                          fontSize: 20,
                                         ),
                                       ),
                                       SizedBox(height: 5),
                                       Row(
                                         children: [
                                           Icon(Icons.email,
-                                              color: Colors.white),
-                                          SizedBox(width: 10),
+                                              color: Colors.white, size: 20,),
+                                          SizedBox(width: 6),
                                           Text(
                                             ' ${user['user_email']}',
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 16,
+                                              fontSize: 14,
                                             ),
                                           ),
                                         ],
@@ -331,14 +331,14 @@ class _HomeTabState extends State<HomeTab> {
                                         children: [
                                           Icon(
                                             Icons.phone,
-                                            color: Colors.white,
+                                            color: Colors.white, size: 20,
                                           ),
-                                          SizedBox(width: 10),
+                                          SizedBox(width: 6),
                                           Text(
                                             ' ${user['user_phonenumber']}',
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 16,
+                                              fontSize: 14,
                                             ),
                                           ),
                                         ],
@@ -785,8 +785,8 @@ class _HomeTabState extends State<HomeTab> {
             ),
           ),
           Positioned(
-            bottom: 70,
-            right: 5,
+            bottom: 16,
+            right: 16,
             child: FloatingActionButton(
               backgroundColor: const Color.fromARGB(171, 76, 175, 79),
               child: Icon(Icons.add, color: Colors.white),

@@ -1,18 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:typed_data';
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/add_rooms.dart';
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/rooms_lists.dart';
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/update_boarding_house.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
-import 'dart:typed_data';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 String OLDBHNAME = "";
 
 class BoardingHouseLists extends StatefulWidget {
   final String userId;
   final bool refresh;
-  const BoardingHouseLists(
-      {super.key, required this.userId, required this.refresh});
+
+  const BoardingHouseLists({
+    super.key,
+    required this.userId,
+    required this.refresh,
+  });
 
   @override
   State<BoardingHouseLists> createState() => _BoardingHouseListsState();
@@ -20,15 +24,12 @@ class BoardingHouseLists extends StatefulWidget {
 
 class _BoardingHouseListsState extends State<BoardingHouseLists> {
   Uint8List? _webImage;
-  bool _isUploading = false;
   late final SupabaseClient supabase;
   final TextEditingController _searchController = TextEditingController();
   final SupabaseClient _supabaseClient = Supabase.instance.client;
-  late Future<String> _imageUrl;
 
   List<Map<String, dynamic>> boardingHouses = [];
   List<Map<String, dynamic>> filteredBoardingHouses = [];
-  String selectedCategory = 'All';
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
     _getBoardingHouses();
   }
 
-//------------------upload images----------------------//
+  //------------------upload images----------------------//
   Future<void> _pickImage() async {
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
@@ -51,6 +52,7 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
     }
   }
 
+  //------------------update boarding house details----------------------//
   Future<void> updateBHDetails({
     required String newBHName,
     required String address,
@@ -78,6 +80,7 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
       final oldFolderPath = oldBHName; // Old folder path
       final newFolderPath = newBHName; // New folder path
 
+      // move files to the new folder
       final listResponse = await supabase.storage
           .from('boarding-house-images')
           .list(path: oldFolderPath);
@@ -96,10 +99,9 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
         if (moveResponse.isEmpty) {
           throw Exception('Failed to move file: ${file.name}');
         }
-        // fetchUserData();
-        // _uploadImage();
       }
 
+      // Remove the old folder
       final deleteResponse = await supabase.storage
           .from('boarding-house-images')
           .remove([oldFolderPath]);
@@ -111,58 +113,49 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
     }
   }
 
-  final boardingHousenameController = TextEditingController();
-  final addressController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final amenitiesController = TextEditingController();
-  final oldbhnameController = TextEditingController();
-
+  //------------------get boarding houses----------------------//
   Future<void> _getBoardingHouses() async {
-    try {
-      final response = await _supabaseClient
-          .from('BUILDING')
-          .select(
-              'build_id, build_name, build_description, build_rating, build_amenities, build_address, user_id, build_created_at')
-          .eq('user_id', widget.userId);
-      if (response.isNotEmpty) {
-        final data = response as List<dynamic>;
+  try {
+    final response = await _supabaseClient
+        .from('BUILDING')
+        .select(
+            'build_id, build_name, build_description, build_rating, build_amenities, build_address, user_id')
+        .eq('user_id', widget.userId);
 
-        setState(() {
-          boardingHouses = data.map((item) {
-            final amenities =
-                (item['build_amenities'] ?? '').toString().split(',');
-            final buildName = item['build_name'] ?? 'unknown_building';
+    if (response.isNotEmpty) {
+      final data = response as List<dynamic>;
+      setState(() {
+        boardingHouses = data.map((item) {
+          final buildName = item['build_name'] ?? 'Unknown Building';
+          final rating = item['build_rating'] ?? 0; 
+          return {
+            'id': item['build_id'] ?? 0,
+            'name': buildName,
+            'description': item['build_description'] ?? 'No description',
+            'rating': rating,
+            'image': _getImageURL(buildName),
+            'address': item['build_address'] ?? 'Unknown Address',
+          };
+        }).toList();
 
-            return {
-              'id': item['build_id'] ?? 0,
-              'name': buildName,
-              'description':
-                  item['build_description'] ?? 'No description available',
-              'rating': item['build_rating'] ?? 0,
-              'amenities': amenities,
-              'image': getImageURL(buildName),
-              'address': item['build_address'] ?? 'Unknown Address',
-              'isSaved': false,
-            };
-          }).toList();
-
-          filteredBoardingHouses = boardingHouses;
-        });
-      } else {
-        print('Error fetching boarding houses: ${response}');
-      }
-    } catch (e) {
-      print('Error fetching boarding houses: $e');
+        filteredBoardingHouses = boardingHouses;
+      });
+    } else {
+      print('No data found');
     }
+  } catch (e) {
+    print('Error fetching boarding houses: $e');
   }
+}
 
-  String getImageURL(String buildName) {
+
+  //------------------get image URL----------------------//
+  String _getImageURL(String buildName) {
     final storageBucket = _supabaseClient.storage.from('boarding-house-images');
-    final response =
-        storageBucket.getPublicUrl("$buildName/buildingProfile.jpg");
-    return response;
+    return storageBucket.getPublicUrl("$buildName/buildingProfile.jpg");
   }
 
+  //------------------search boarding houses----------------------//
   void _searchBoardingHouses() {
     setState(() {
       filteredBoardingHouses = boardingHouses
@@ -180,187 +173,209 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       body: SafeArea(
-        child: SizedBox(
-          width: 450,
-          height: 620,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsetsDirectional.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        height: 30,
-                        width: 105,
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                              ),
-                              onPressed: () {
-                                _getBoardingHouses();
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.refresh,
-                                      size: 16, color: Colors.green),
-                                  SizedBox(width: 2),
-                                  Text("Refresh",
-                                      style: TextStyle(
-                                          fontSize: 10, color: Colors.green)),
-                                ],
-                              )),
-                        ),
+        child: Column(
+          children: [
+            //------------------header----------------------//
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "My Boarding Houses",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green.shade800,
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      SizedBox(width: 30),
-                      Text("My Boarding Houses",
-                          style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold)),
-                    ],
+                    ),
+                    onPressed: _getBoardingHouses,
+                    icon: const Icon(Icons.refresh, size: 18, color: Colors.white,),
+                     label: const Text( "Refresh", style: TextStyle(color: Colors.white),
                   ),
-                ),
-
-                // List of Boarding Houses
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: filteredBoardingHouses.length,
-                    itemBuilder: (context, index) {
-                      final house = filteredBoardingHouses[index];
-                      return _createBoardingHouseCard(
-                        house['name'],
-                        house['address'],
-                        house['rating'],
-                        house['image'],
-                        house['isSaved'],
-                        house['id'],
-                      );
-                    },
-                  ),
-                ),
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
+
+            //------------------search bar----------------------//
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (_) => _searchBoardingHouses(),
+                decoration: InputDecoration(
+                  hintText: "Search boarding houses",
+                  prefixIcon: const Icon(Icons.search, color: Colors.green),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.green),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            //------------------boarding houses list----------------------//
+            Expanded(
+  child: ListView.builder(
+    padding: const EdgeInsets.only(
+      top: 16,
+      left: 16,
+      right: 16,
+      bottom: 80,
+    ),
+    itemCount: filteredBoardingHouses.length,
+    itemBuilder: (context, index) {
+      final house = filteredBoardingHouses[index];
+      return _createBoardingHouseCard(
+        house['name'],
+        house['address'],
+        house['rating'],
+        house['image'],
+        house['id'],
+      );
+    },
+  ),
+),
+
+          ],
         ),
       ),
     );
   }
 
+  //------------------boarding house card----------------------//
   Widget _createBoardingHouseCard(
     String name,
     String description,
     int rating,
     String imagePath,
-    bool isSaved,
     int buildId,
   ) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    RoomsLists(buildId: buildId, imagePath: imagePath)));
+          context,
+          MaterialPageRoute(
+            builder: (context) => RoomsLists(
+              buildId: buildId,
+              imagePath: imagePath,
+            ),
+          ),
+        );
       },
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: 3,
-        margin: const EdgeInsets.only(bottom: 16.0),
+        margin: const EdgeInsets.only(bottom: 16),
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              children: [
-                ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      imagePath,
-                      width: double.infinity,
-                      height: 275,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.error,
-                            size: 50, color: Colors.red);
-                      },
-                    )),
-                Positioned(
-                  right: 50,
-                  top: 10,
-                  child: Container(
-                    height: 30,
-                    width: 30,
-                    decoration: BoxDecoration(
-                        color: const Color.fromARGB(137, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(7)),
+            //------------------image----------------------//
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+              child: Image.network(
+                imagePath,
+                width: double.infinity,
+                height: 180,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const SizedBox(
+                    height: 180,
                     child: Center(
-                      child: IconButton(
-                          icon: Icon(
-                            Icons.add,
-                            color: Colors.black,
-                            size: 16,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AddRooms(
-                                        buildId: buildId, buildName: name)));
-                          }),
+                      child: Icon(Icons.error, size: 50, color: Colors.red),
                     ),
-                  ),
-                ),
-                Positioned(
-                  right: 10,
-                  top: 10,
-                  child: Container(
-                    height: 30,
-                    width: 30,
-                    decoration: BoxDecoration(
-                        color: const Color.fromARGB(137, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(7)),
-                    child: Center(
-                      child: IconButton(
-                          icon: Icon(
-                            Icons.edit,
-                            color: Colors.black,
-                            size: 18,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => UpdateBoardingHouse(
-                                          buildId: buildId,
-                                        )));
-                          }),
-                    ),
-                  ),
-                )
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                name,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  );
+                },
               ),
             ),
+
+            //------------------details----------------------//
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                description,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: List.generate(
+                          rating,
+                          (index) =>
+                              const Icon(Icons.star, color: Colors.orange, size: 16),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.add, color: Colors.green),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddRooms(
+                                    buildId: buildId,
+                                    buildName: name,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.green),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UpdateBoardingHouse(
+                                    buildId: buildId,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],

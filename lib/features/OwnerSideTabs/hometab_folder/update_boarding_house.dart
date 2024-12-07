@@ -5,8 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class UpdateBoardingHouse extends StatefulWidget {
   final int buildId;
 
-  const UpdateBoardingHouse({Key? key, required this.buildId})
-      : super(key: key);
+  const UpdateBoardingHouse({super.key, required this.buildId});
 
   @override
   State<UpdateBoardingHouse> createState() => _UpdateBoardingHouseState();
@@ -53,7 +52,7 @@ class _UpdateBoardingHouseState extends State<UpdateBoardingHouse> {
 
   Future<String> _fetchImageUrl(String bucketName, String filePath) async {
     try {
-      final response = await Supabase.instance.client.storage
+      final response = Supabase.instance.client.storage
           .from(bucketName)
           .getPublicUrl(filePath);
 
@@ -76,20 +75,14 @@ class _UpdateBoardingHouseState extends State<UpdateBoardingHouse> {
           .eq('build_id', widget.buildId)
           .single();
 
-      if (response != null) {
-        setState(() {
-          _buildingNameController.text = response['build_name'] ?? '';
-          _buildingDescriptionController.text =
-              response['build_description'] ?? '';
-          _buildingAddressController.text = response['build_address'] ?? '';
-          _buildingAmenitiesController.text = response['build_amenities'] ?? '';
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Building not found')),
-        );
-      }
-    } catch (e) {
+      setState(() {
+        _buildingNameController.text = response['build_name'] ?? '';
+        _buildingDescriptionController.text =
+            response['build_description'] ?? '';
+        _buildingAddressController.text = response['build_address'] ?? '';
+        _buildingAmenitiesController.text = response['build_amenities'] ?? '';
+      });
+        } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading data: $e')),
       );
@@ -292,13 +285,13 @@ class _UpdateBoardingHouseState extends State<UpdateBoardingHouse> {
                         return const Center(
                             child: Text('No building data found.'));
                       } else {
-                        final build_name =
+                        final buildName =
                             snapshot.data as Map<String, dynamic>;
-                        BUILDINGNAME = build_name['build_name'];
+                        BUILDINGNAME = buildName['build_name'];
                         return Column(
                           children: [
                             SizedBox(height: 20),
-                            Text(build_name['build_name'],
+                            Text(buildName['build_name'],
                                 style: TextStyle(fontSize: 30)),
                             const SizedBox(height: 20),
                             TextFormField(

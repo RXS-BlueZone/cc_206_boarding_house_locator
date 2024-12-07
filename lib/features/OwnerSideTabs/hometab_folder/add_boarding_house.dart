@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:image_picker/image_picker.dart';
 
 void main() async {
@@ -9,19 +10,19 @@ void main() async {
       url: 'https://wwnayjgntdptacsbsnus.supabase.co',
       anonKey:
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3bmF5amdudGRwdGFjc2JzbnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI5NTU0MzMsImV4cCI6MjA0ODUzMTQzM30.w3E77UKpHnnhpe7Q3IEBXJhMdB3UP7Fvux9PQf7dxi0');
-  runApp(const AddNewBoardingHouse(userId: ''));
+  runApp(const AddNewBoardinHouse(userId: ''));
 }
 
-class AddNewBoardingHouse extends StatefulWidget {
+class AddNewBoardinHouse extends StatefulWidget {
   final String userId;
 
-  const AddNewBoardingHouse({super.key, required this.userId});
+  const AddNewBoardinHouse({super.key, required this.userId});
 
   @override
-  State<AddNewBoardingHouse> createState() => _AddNewBoardingHouseState();
+  State<AddNewBoardinHouse> createState() => _AddNewBoardinHouseState();
 }
 
-class _AddNewBoardingHouseState extends State<AddNewBoardingHouse> {
+class _AddNewBoardinHouseState extends State<AddNewBoardinHouse> {
   final _formKey = GlobalKey<FormState>();
   Uint8List? _webImage;
   bool _isUploading = false;
@@ -57,11 +58,12 @@ class _AddNewBoardingHouseState extends State<AddNewBoardingHouse> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Boarding House name is available!'),
+              content: Text('Boarding House created successfully!'),
               backgroundColor: Colors.green,
             ),
           );
 
+          // Call the subsequent functions to process the form and upload the image
           await _submitBuildingData();
           await _uploadImage();
 
@@ -83,6 +85,7 @@ class _AddNewBoardingHouseState extends State<AddNewBoardingHouse> {
     final buildDescription = _buildingDescriptionController.text;
     final buildingAddress = _buildingAdressController.text;
     final buildingAmenities = _buildingAmenitiesController.text;
+    final buildingUserId = widget.userId;
 
     BuildingName = buildingName;
 
@@ -108,12 +111,9 @@ class _AddNewBoardingHouseState extends State<AddNewBoardingHouse> {
         'build_description': buildDescription,
         'build_address': buildingAddress,
         'build_amenities': buildingAmenities,
-        'user_id': widget.userId,
+        'user_id': buildingUserId,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Room added successfully!')),
-      );
       _buildingNameController.clear();
       _buildingDescriptionController.clear();
       _buildingAdressController.clear();
@@ -182,17 +182,6 @@ class _AddNewBoardingHouseState extends State<AddNewBoardingHouse> {
       final storageResponse = await supabase.storage
           .from('boarding-house-images')
           .uploadBinary(filePath, _webImage!);
-
-      if (storageResponse.isNotEmpty) {
-        print("uploaded successfully");
-      }
-
-      final publicUrl =
-          supabase.storage.from('boarding-house-images').getPublicUrl(filePath);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Image uploaded successfully! URL: $publicUrl')),
-      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Upload failed: $e')),

@@ -13,8 +13,6 @@ void main() async {
   runApp(const HomeTab(userId: ''));
 }
 
-FocusNode _focusNode = FocusNode();
-
 class HomeTab extends StatefulWidget {
   final String userId;
 
@@ -54,7 +52,6 @@ class _HomeTabState extends State<HomeTab> {
         throw Exception('No user data found');
       }
     } catch (e) {
-      print('Error fetching user data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error fetching user data: $e'),
@@ -146,7 +143,7 @@ class _HomeTabState extends State<HomeTab> {
           })
           .eq('user_id', userId)
           .select();
-
+      ;
       if (response.isNotEmpty) {
         throw Exception('Failed to update user details.');
       }

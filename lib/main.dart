@@ -38,7 +38,8 @@ class MainApp extends StatelessWidget {
             ),
         '/login': (context) => const LoginPage(),
         '/homepage': (context) => OwnerHome(userId: ""),
-        '/add_boarding_house': (context) => AddNewBoardingHouse(userId: ""),
+        '/add_boarding_house': (context) => AddNewBoardinHouse(
+            userId: ModalRoute.of(context)!.settings.arguments as String)
       },
     );
   }

@@ -10,7 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_secure_storage: ^5.0.2
   provider: ^6.0.3
   supabase_flutter: ^2.8.1
   file_picker: ^8.1.4

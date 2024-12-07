@@ -22,6 +22,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final _nameController = TextEditingController();
 
+  bool isAgreed = false;
+
   String userType =
       ''; // storage for user type passed from the role selection as arguments
 
@@ -42,11 +44,14 @@ class _SignUpPageState extends State<SignUpPage> {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
     }
+
     final emailValidFormat =
         RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+
     if (!emailValidFormat.hasMatch(value)) {
       return 'Enter a valid email address';
     }
+
     return null;
   }
 
@@ -112,7 +117,7 @@ class _SignUpPageState extends State<SignUpPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Registration Failed'),
-              content: Text('$response'),
+              content: Text(response.toString()),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -131,8 +136,8 @@ class _SignUpPageState extends State<SignUpPage> {
       final userId = response.user!.id;
 
       // Insert additional user details into 'USERS' table
-      final insertResponse =
-          await Supabase.instance.client.from('USERS').insert([
+      // final insertResponse =
+      await Supabase.instance.client.from('USERS').insert([
         {
           'user_id': userId, // ID from the Supabase Auth
           'user_fullname': _nameController.text.trim(),
@@ -143,28 +148,28 @@ class _SignUpPageState extends State<SignUpPage> {
         }
       ]);
 
-      if (insertResponse.error != null) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: Text(
-                'Failed to save user details: ${insertResponse.error?.message ?? 'Unknown error'}',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-        return; // Stop if there was an error
-      }
+      // if (insertResponse.error != null) {
+      //   showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) {
+      //       return AlertDialog(
+      //         title: const Text('Error'),
+      //         content: Text(
+      //           'Failed to save user details: ${insertResponse.error?.message ?? 'Unknown error'}',
+      //         ),
+      //         actions: [
+      //           TextButton(
+      //             onPressed: () {
+      //               Navigator.pop(context);
+      //             },
+      //             child: const Text('OK'),
+      //           ),
+      //         ],
+      //       );
+      //     },
+      //   );
+      //   return; // Stop if there was an error
+      // }
 
       // If successful
       showDialog(
@@ -255,19 +260,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               prefixIcon:
                                   const Icon(Icons.person, color: Colors.green),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.name,
@@ -287,19 +292,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               prefixIcon:
                                   const Icon(Icons.email, color: Colors.green),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.emailAddress,
@@ -319,19 +324,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               prefixIcon:
                                   const Icon(Icons.phone, color: Colors.green),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.phone,
@@ -365,19 +370,19 @@ class _SignUpPageState extends State<SignUpPage> {
                                 },
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.visiblePassword,
@@ -412,19 +417,19 @@ class _SignUpPageState extends State<SignUpPage> {
                                 },
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.visiblePassword,
@@ -437,7 +442,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -445,9 +450,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Checkbox(
-                          value: true, // just for placeholder
+                          value: isAgreed, // just for placeholder
                           onChanged: (value) {
-                            // Checkbox logic (not yet implemented)
+                            setState(() {
+                              isAgreed = value!; // Update the state
+                            });
                           },
                           activeColor: Colors.green,
                         ),
@@ -463,11 +470,13 @@ class _SignUpPageState extends State<SignUpPage> {
 
                     // Register Button
                     ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          _registerUser();
-                        }
-                      },
+                      onPressed: isAgreed
+                          ? () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                _registerUser();
+                              }
+                            }
+                          : null,
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           minimumSize: const Size(370, 50),

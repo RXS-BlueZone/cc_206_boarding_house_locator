@@ -204,7 +204,8 @@ class _LoginPageState extends State<LoginPage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => OwnerHome(
-                                            userId: response['user_id'],
+                                            userId:
+                                                response['user_id'].toString(),
                                           )));
                             } else {
                               // Handle invalid user type (for debugging purposes)
@@ -254,7 +255,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/role_selection');
+                          },
                           child: const Text(
                             "Sign Up",
                             style: TextStyle(

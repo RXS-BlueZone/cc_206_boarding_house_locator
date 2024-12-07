@@ -59,8 +59,6 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
     required String oldBHName,
   }) async {
     oldBHName = OLDBHNAME;
-    print('old BH N: $oldBHName');
-
     final response = await supabase
         .from('BUILDING')
         .update({
@@ -72,8 +70,6 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
         .eq('user_id', widget.userId)
         .select();
 
-    print('NEW BH NAME: $newBHName');
-
     if (response.isEmpty) {
       throw Exception('Failed to update BH details.');
     }
@@ -81,8 +77,6 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
     try {
       final oldFolderPath = oldBHName; // Old folder path
       final newFolderPath = newBHName; // New folder path
-      print('old folder path: $oldFolderPath');
-      print('new folder path: $newFolderPath');
 
       final listResponse = await supabase.storage
           .from('boarding-house-images')
@@ -102,7 +96,6 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
         if (moveResponse.isEmpty) {
           throw Exception('Failed to move file: ${file.name}');
         }
-        print("Folder renamed successfully.");
         // fetchUserData();
         // _uploadImage();
       }
@@ -167,7 +160,6 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
     final storageBucket = _supabaseClient.storage.from('boarding-house-images');
     final response =
         storageBucket.getPublicUrl("$buildName/buildingProfile.jpg");
-    String imagePath = "$buildName/buildingProfile.jpg";
     return response;
   }
 

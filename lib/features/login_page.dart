@@ -1,4 +1,9 @@
+
 import 'package:cc_206_boarding_house_locator/features/OwnerSideNav.dart';
+
+// import 'package:cc_206_boarding_house_locator/features/BoarderSideNav.dart';
+// import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
+import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -66,19 +71,19 @@ class _LoginPageState extends State<LoginPage> {
                               prefixIcon:
                                   const Icon(Icons.email, color: Colors.green),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.emailAddress,
@@ -111,19 +116,19 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide:
                                     const BorderSide(color: Colors.grey),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     color: Colors.grey, width: 1.5),
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
-                                    color: Colors.green, width: 2.0),
-                                borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.green, width: 2),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             keyboardType: TextInputType.visiblePassword,
@@ -153,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -174,6 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                         final email = _emailController.text.trim();
                         final password = _passwordController.text;
                         try {
+
                           // Query the USERS table to get user details
                           final response = await Supabase.instance.client
                               .from('USERS')
@@ -197,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             );
 
-                            // Go to respective homepage based on user type
+                            // go to the respective homepage based on user type
                             if (userType == 'Boarder') {
                             } else if (userType == 'Owner') {
                               Navigator.pushReplacement(
@@ -206,9 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                                       builder: (context) => OwnerHome(
                                             userId:
                                                 response['user_id'].toString(),
-                                          )));
-                            } else {
-                              // Handle invalid user type (for debugging purposes)
+                                          )));              } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
@@ -218,7 +222,6 @@ class _LoginPageState extends State<LoginPage> {
                               );
                             }
                           } else {
-                            // Invalid credentials (invalid email or password)
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -228,13 +231,25 @@ class _LoginPageState extends State<LoginPage> {
                             );
                           }
                         } catch (e) {
-                          // Handle errors during the login process
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Error: ${e.toString()}'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          final error = e.toString().toLowerCase();
+                          if (error.contains('invalid login credentials')) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Invalid email or password. Please try again.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          } else {
+                            // general error message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'An unexpected error occurred. Please try again later.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
                       },
                       child: const Text(

@@ -1,5 +1,9 @@
+
 import 'package:cc_206_boarding_house_locator/features/OwnerSideNav.dart';
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/add_boarding_house.dart';
+import 'package:cc_206_boarding_house_locator/features/BoarderSideNav.dart';
+import 'package:cc_206_boarding_house_locator/features/BoarderSideTabs/HomeTabPages/bh_details_page.dart';
+// import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
 import 'package:cc_206_boarding_house_locator/features/login_page.dart';
 import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
 import 'package:cc_206_boarding_house_locator/features/sign_up_page.dart';
@@ -37,9 +41,20 @@ class MainApp extends StatelessWidget {
               userType: '',
             ),
         '/login': (context) => const LoginPage(),
+
         '/homepage': (context) => OwnerHome(userId: ""),
         '/add_boarding_house': (context) => AddNewBoardinHouse(
             userId: ModalRoute.of(context)!.settings.arguments as String)
+        '/boarderHome': (context) => BoarderHomePage(),
+        // '/ownerHome': (context) => OwnerHomePage(),
+        '/bhdetails': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return BoardingHouseDetailsPage(
+            buildId: args['id'], // id argument
+            imagePath: args['image'], // image argument
+          );
+        },
       },
     );
   }

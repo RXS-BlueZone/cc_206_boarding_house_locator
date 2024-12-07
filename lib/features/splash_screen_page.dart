@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   // Handle routing after the splash screen
   Future<void> _goTo() async {
     await Future.delayed(const Duration(
-        seconds: 3)); // Delay for splash screen before displaying login
+        seconds: 2)); // Delay for splash screen before displaying login
 
     try {
       final session = Supabase.instance.client.auth.currentSession;
@@ -27,20 +27,27 @@ class _SplashScreenState extends State<SplashScreen> {
         // For Debugging: Log the session
         print('Session restored: ${session.toJson()}');
 
-        // Check if session is valid by querying the USERS table
-        final email = session.user.email;
-        if (email != null) {
-          final response = await Supabase.instance.client
-              .from('USERS')
-              .select('user_email')
-              .eq('user_email', email);
+        // Check if session is valid by querying the USERS table using user_id
+        final userId = session.user.id;
+        final response = await Supabase.instance.client
+            .from('USERS')
+            .select('user_id, user_type') // Fetch user_id and user_type
+            .eq('user_id', userId)
+            .single(); // Expect a single record
 
-          if (response.isNotEmpty) {
-            // Go to homepage if the user exists
-            Navigator.pushReplacementNamed(context, '/homepage');
-            return;
-          }
+        // Check the user_type and navigate accordingly
+        final userType = response['user_type'];
+        if (userType == 'Boarder') {
+          Navigator.pushReplacementNamed(context, '/boarderHome');
+        } else if (userType == 'Owner') {
+          Navigator.pushReplacementNamed(context, '/ownerHome');
         }
+        // else {
+        //   // Handle unexpected user_type
+        //   print('Unexpected user_type: $userType');
+        //   Navigator.pushReplacementNamed(context, '/login');
+        // }
+        return;
       }
 
       // Go to login if no valid session or user is found

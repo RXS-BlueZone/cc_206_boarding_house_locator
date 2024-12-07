@@ -1,64 +1,58 @@
+import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/home_tab.dart';
+import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/profile_tab.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-class OwnerHomePage extends StatefulWidget {
-  const OwnerHomePage({super.key});
+class OwnerHome extends StatefulWidget {
+  final String userId;
+  const OwnerHome({super.key, required this.userId});
 
   @override
-  State<OwnerHomePage> createState() => _OwnerHomePageState();
+  _OwnerHomeState createState() => _OwnerHomeState();
 }
 
-class _OwnerHomePageState extends State<OwnerHomePage> {
+class _OwnerHomeState extends State<OwnerHome> {
+  int _currentIndex = 0;
+  late String userId;
+
+  late final List<Widget> _boarderScreens;
+
+  @override
+  void initState() {
+    super.initState();
+    userId = widget.userId;
+    _boarderScreens = [
+      HomeTab(userId: userId),
+      ProfileTab(
+        userId: userId,
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Owner Home Page'),
-        automaticallyImplyLeading: false,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: const Text(
-              'This is the OWNER homepage',
-              style: TextStyle(fontSize: 24),
-              textAlign: TextAlign.center,
+      body: _boarderScreens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.green,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(
+              _currentIndex == 0 ? Icons.home : Icons.home_outlined,
             ),
+            label: 'Home',
           ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                await Supabase.instance.client.auth.signOut();
-                Navigator.pushReplacementNamed(context, '/login');
-              } catch (e) {
-                print('Error logging out: $e');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error logging out: $e')),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              backgroundColor: Colors.green,
-              elevation: 5,
+          BottomNavigationBarItem(
+            icon: Icon(
+              _currentIndex == 2 ? Icons.person : Icons.person_outline,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.logout, color: Colors.white),
-                SizedBox(width: 8),
-                Text(
-                  'Logout',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ],
-            ),
+            label: 'Profile',
           ),
         ],
       ),

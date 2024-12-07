@@ -1,7 +1,7 @@
 name: cc_206_boarding_house_locator
 
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -10,7 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  supabase_flutter: ^2.8.1  
+  provider: ^6.0.3
+  supabase_flutter: ^2.8.1
+  file_picker: ^8.1.4
+  image_picker: ^1.1.2
   provider: ^6.0.3  
 
 dev_dependencies:

@@ -1,4 +1,5 @@
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/add_rooms.dart';
+import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/rooms_lists.dart';
 import 'package:cc_206_boarding_house_locator/features/OwnerSideTabs/hometab_folder/update_boarding_house.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -273,7 +274,13 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
     int buildId,
   ) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    RoomsLists(buildId: buildId, imagePath: imagePath)));
+      },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 3,

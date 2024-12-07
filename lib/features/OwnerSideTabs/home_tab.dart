@@ -24,12 +24,13 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   Uint8List? _webImage;
-  late final SupabaseClient supabase;
   late Future<String> _imageUrl;
   String userFullName = "";
   String userPhoneNumber = "";
   String userEmail = "";
   String? userType;
+
+  SupabaseClient supabase = Supabase.instance.client;
 
   // Future function to fetch user data
   Future<void> fetchUserData() async {
@@ -785,11 +786,11 @@ class _HomeTabState extends State<HomeTab> {
             ),
           ),
           Positioned(
-            bottom: 70,
-            right: 5,
+            bottom: 16,
+            right: 16,
             child: FloatingActionButton(
               backgroundColor: const Color.fromARGB(171, 76, 175, 79),
-              child: Icon(Icons.add, color: Colors.white),
+              child: const Icon(Icons.add, color: Colors.white),
               onPressed: () {
                 Navigator.pushNamed(
                   context,

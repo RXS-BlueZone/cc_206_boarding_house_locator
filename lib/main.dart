@@ -1,6 +1,6 @@
 import 'package:cc_206_boarding_house_locator/features/BoarderSideNav.dart';
 import 'package:cc_206_boarding_house_locator/features/BoarderSideTabs/HomeTabPages/bh_details_page.dart';
-import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
+// import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
 import 'package:cc_206_boarding_house_locator/features/login_page.dart';
 import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
 import 'package:cc_206_boarding_house_locator/features/sign_up_page.dart';
@@ -39,7 +39,7 @@ class MainApp extends StatelessWidget {
             ),
         '/login': (context) => const LoginPage(),
         '/boarderHome': (context) => BoarderHomePage(),
-        '/ownerHome': (context) => OwnerHomePage(),
+        // '/ownerHome': (context) => OwnerHomePage(),
         '/bhdetails': (context) {
           final args = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>;

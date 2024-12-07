@@ -4,6 +4,8 @@ import 'package:cc_206_boarding_house_locator/features/BoarderSideTabs/profile_t
 import 'package:cc_206_boarding_house_locator/features/BoarderSideTabs/saved_tab.dart';
 
 class BoarderHomePage extends StatefulWidget {
+  const BoarderHomePage({super.key});
+
   @override
   _BoarderHomePageState createState() => _BoarderHomePageState();
 }

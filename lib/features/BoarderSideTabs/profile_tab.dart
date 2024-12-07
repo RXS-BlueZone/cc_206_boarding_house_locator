@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileTab extends StatefulWidget {
+  const ProfileTab({super.key});
+
   @override
   _ProfileTabState createState() => _ProfileTabState();
 }

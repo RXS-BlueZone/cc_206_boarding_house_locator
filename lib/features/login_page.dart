@@ -1,5 +1,5 @@
 import 'package:cc_206_boarding_house_locator/features/BoarderSideNav.dart';
-import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
+// import 'package:cc_206_boarding_house_locator/features/Ownerhomepage(placeholder).dart';
 import 'package:cc_206_boarding_house_locator/features/role_selection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -205,11 +205,11 @@ class _LoginPageState extends State<LoginPage> {
                                     builder: (context) => BoarderHomePage()),
                               );
                             } else if (userType == 'Owner') {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => OwnerHomePage()),
-                              );
+                              // Navigator.pushReplacement(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) => OwnerHomePage()),
+                              // );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(

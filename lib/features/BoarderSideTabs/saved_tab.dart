@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'home_tab.dart';
 
 class SavedTab extends StatefulWidget {
+  const SavedTab({super.key});
+
   @override
   _SavedTabState createState() => _SavedTabState();
 }

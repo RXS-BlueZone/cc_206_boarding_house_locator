@@ -11,8 +11,7 @@ class BoardingHouseDetailsPage extends StatefulWidget {
 
   // to initialize with required parameters
   const BoardingHouseDetailsPage(
-      {Key? key, required this.buildId, required this.imagePath})
-      : super(key: key);
+      {super.key, required this.buildId, required this.imagePath});
 
   @override
   State<BoardingHouseDetailsPage> createState() =>

@@ -1,3 +1,4 @@
+import 'package:cc_206_boarding_house_locator/features/OwnerSideNav.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,48 +18,50 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // Handle routing after the splash screen
   Future<void> _goTo() async {
-    await Future.delayed(const Duration(
-        seconds: 2)); // Delay for splash screen before displaying login (changed from 3 to 2 seconds)
+    await Future.delayed(const Duration(seconds: 2));
 
     try {
-      final session = Supabase.instance.client.auth.currentSession;
+        final session = Supabase.instance.client.auth.currentSession;
 
-      if (session != null) {
-        // For Debugging: Log the session
-        print('Session restored: ${session.toJson()}');
+        if (session != null) {
+            // For Debugging: Log the session
+            print('Session restored: ${session.toJson()}');
 
-        // Check if session is valid by querying the USERS table using user_id (to redirect to home page if user is not logged out)
-        final userId = session.user.id;
-        final response = await Supabase.instance.client
-            .from('USERS')
-            .select('user_id, user_type') // get user_id and user_type from USERS table
-            .eq('user_id', userId)
-            .single(); // Expect a single record or row from the table
+            // get the user_id from the session and query user details
+            final userId = session.user.id;
+            final response = await Supabase.instance.client
+                .from('USERS')
+                .select('user_id, user_type')
+                .eq('user_id', userId)
+                .single();
 
-        // Check the user_type and navigate accordingly if user truly is in session
-        final userType = response['user_type'];
-        if (userType == 'Boarder') {
-          Navigator.pushReplacementNamed(context, '/boarderHome');
-        } else if (userType == 'Owner') {
-          Navigator.pushReplacementNamed(context, '/ownerHome');
+            final userType = response['user_type'];
+
+            if (userType == 'Boarder') {
+                Navigator.pushReplacementNamed(context, '/boarderHome');
+            } else if (userType == 'Owner') {
+                // Pass userId to OwnerHomePage to make sure owner is logged in even after closing the app
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => OwnerHomePage(userId: userId)),
+                );
+            } else {
+                print('Unexpected user_type: $userType');
+                Navigator.pushReplacementNamed(context, '/login');
+            }
+            return;
         }
-        // Precautionary
-        else {
-         
-          print('Unexpected user_type: $userType');
-          Navigator.pushReplacementNamed(context, '/login');
-        }
-        return;
-      }
 
       // Go to login if no valid session or user is found
-      Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushReplacementNamed(context, '/login');
     } catch (e) {
       // For debugging purposes: Print error in console
-      print('Error checking session: $e');
-      Navigator.pushReplacementNamed(context, '/login');
+        print('Error checking session: $e');
+        Navigator.pushReplacementNamed(context, '/login');
     }
-  }
+}
+
 
   @override
   Widget build(BuildContext context) {

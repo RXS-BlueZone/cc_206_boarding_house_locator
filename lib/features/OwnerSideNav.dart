@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class OwnerHomePage extends StatefulWidget {
   final String userId;
-  const OwnerHomePage({super.key, required this.userId});
+   const OwnerHomePage({required this.userId, Key? key}) : super(key: key);
 
   @override
   _OwnerHomePageState createState() => _OwnerHomePageState();

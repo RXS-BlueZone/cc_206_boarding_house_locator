@@ -100,27 +100,39 @@ Future<void> _getBHDetails() async {
     }
   }
 
-  Future<void> updateRoomDetails({
-    required int roomId,
-    required String price,
-    required String description,
-  }) async {
-    try {
-      if (price.isEmpty || description.isEmpty) {
-        throw Exception('Price and description cannot be empty.');
-      }
-      final response = await supabase.from('ROOMS').update({
-        'room_price': int.parse(price),
-        'room_description': description,
-      }).eq('room_id', roomId);
-
-      if (response.error != null) {
-        throw Exception('Failed to update room: ${response.error!.message}');
-      }
-    } catch (e) {
-      throw Exception('Error updating room details: $e');
+Future<void> updateRoomDetails({
+  required int roomId,
+  String? price,
+  String? description,
+}) async {
+  try {
+    if ((price == null || price.isEmpty) && (description == null || description.isEmpty)) {
+      throw Exception('At least one field (price or description) must be provided.');
     }
+    final Map<String, dynamic> updates = {};
+    if (price != null && price.isNotEmpty) {
+      updates['room_price'] = int.parse(price);
+    }
+    if (description != null && description.isNotEmpty) {
+      updates['room_description'] = description;
+    }
+    print('Updating room details: $updates for room ID: $roomId');
+    final response = await supabase
+        .from('ROOMS')
+        .update(updates)
+        .eq('room_id', roomId);
+
+    // response debugging
+    print('Response: $response');
+
+    if (response.isEmpty) {
+      throw Exception('No room was updated. The room ID might not exist.');
+    }
+  // ignore: empty_catches
+  } catch (e) {
+
   }
+}
 
   Future<void> deleteRoomById(int roomId) async {
     try {
@@ -398,208 +410,174 @@ Future<void> _getBHDetails() async {
                                                             ),
                                                             onPressed: () {
                                                               showModalBottomSheet(
-                                                                  context:
-                                                                      context,
-                                                                  isScrollControlled:
-                                                                      true,
-                                                                  builder:
-                                                                      (BuildContext
-                                                                          context) {
-                                                                    return Padding(
-                                                                      padding:
-                                                                          EdgeInsets
-                                                                              .only(
-                                                                        bottom: MediaQuery.of(context)
-                                                                            .viewInsets
-                                                                            .bottom,
-                                                                      ),
-                                                                      child:
-                                                                          FractionallySizedBox(
-                                                                        heightFactor:
-                                                                            0.8,
-                                                                        child:
-                                                                            Column(
-                                                                          children: [
-                                                                            Align(
-                                                                              alignment: Alignment.topRight,
-                                                                              child: IconButton(
-                                                                                onPressed: () {
-                                                                                  Navigator.pop(context);
-                                                                                },
-                                                                                icon: Icon(Icons.close),
-                                                                              ),
+                                                                context: context,
+                                                                isScrollControlled: true,
+                                                                builder: (BuildContext context) {
+                                                                  return Padding(
+                                                                    padding: EdgeInsets.only(
+                                                                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                                                                    ),
+                                                                    child: FractionallySizedBox(
+                                                                      heightFactor: 0.8,
+                                                                      child: Column(
+                                                                        children: [
+                                                                          Align(
+                                                                            alignment: Alignment.topRight,
+                                                                            child: IconButton(
+                                                                              onPressed: () {
+                                                                                Navigator.pop(context);
+                                                                              },
+                                                                              icon: Icon(Icons.close),
                                                                             ),
-                                                                            Text('Update Rooms'),
-                                                                            SizedBox(height: 10),
-                                                                            Container(
-                                                                              width: 380,
-                                                                              height: 180,
-                                                                              decoration: BoxDecoration(
-                                                                                  border: Border.all(
-                                                                                color: const Color.fromARGB(255, 105, 105, 105),
-                                                                                width: 1,
-                                                                              )),
-                                                                              child: Center(
-                                                                                child: _webImage == null
-                                                                                    ? FutureBuilder<String>(
-                                                                                        future: _imageUrl = _fetchImageUrl(bucketName, '${details['build_name']}/${room['room_name']}.jpg'),
-                                                                                        builder: (context, snapshot) {
-                                                                                          if (snapshot.connectionState == ConnectionState.waiting) {
-                                                                                            return const CircularProgressIndicator();
-                                                                                          } else if (snapshot.hasError) {
-                                                                                            return CircleAvatar(
-                                                                                              backgroundColor: Colors.white,
-                                                                                              child: Icon(
-                                                                                                Icons.person,
-                                                                                                size: 40,
-                                                                                                color: Colors.green,
+                                                                          ),
+                                                                          Text(
+                                                                            'Update Rooms',
+                                                                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                                                          ),
+                                                                          SizedBox(height: 10),
+                                                                          Padding(
+                                                                            padding: EdgeInsets.all(20),
+                                                                            child: Column(
+                                                                              children: [
+                                                                                TextField(
+                                                                                  controller: roomDescriptionController,
+                                                                                  decoration: InputDecoration(
+                                                                                    labelText: room['room_description'] ?? 'Description',
+                                                                                    prefixIcon: Icon(
+                                                                                      Icons.description,
+                                                                                      color: Colors.green,
+                                                                                    ),
+                                                                                    border: OutlineInputBorder(
+                                                                                      borderRadius: BorderRadius.circular(10),
+                                                                                    ),
+                                                                                    enabledBorder: OutlineInputBorder(
+                                                                                      borderRadius: BorderRadius.circular(10),
+                                                                                      borderSide: BorderSide(color: Color.fromARGB(255, 105, 105, 105)),
+                                                                                    ),
+                                                                                    focusedBorder: OutlineInputBorder(
+                                                                                      borderRadius: BorderRadius.circular(10),
+                                                                                      borderSide: BorderSide(color: Colors.green),
+                                                                                    ),
+                                                                                  ),
+                                                                                  keyboardType: TextInputType.multiline,
+                                                                                  maxLines: 3,
+                                                                                  minLines: 1,
+                                                                                ),
+                                                                                SizedBox(height: 10),
+                                                                                TextField(
+                                                                                  controller: roomPriceController,
+                                                                                  decoration: InputDecoration(
+                                                                                    labelText: room['room_price']?.toString() ?? 'Price',
+                                                                                    prefixIcon: Icon(
+                                                                                      Icons.money,
+                                                                                      color: Colors.green,
+                                                                                    ),
+                                                                                    border: OutlineInputBorder(
+                                                                                      borderRadius: BorderRadius.circular(10),
+                                                                                    ),
+                                                                                    enabledBorder: OutlineInputBorder(
+                                                                                      borderRadius: BorderRadius.circular(10),
+                                                                                      borderSide: BorderSide(color: Color.fromARGB(255, 105, 105, 105)),
+                                                                                    ),
+                                                                                    focusedBorder: OutlineInputBorder(
+                                                                                      borderRadius: BorderRadius.circular(10),
+                                                                                      borderSide: BorderSide(color: Colors.green),
+                                                                                    ),
+                                                                                  ),
+                                                                                  keyboardType: TextInputType.number,
+                                                                                ),
+                                                                                SizedBox(height: 15),
+                                                                                Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    SizedBox(
+                                                                                      width: 170,
+                                                                                      child: ElevatedButton(
+                                                                                        style: ElevatedButton.styleFrom(
+                                                                                          backgroundColor: Color.fromARGB(255, 226, 92, 82),
+                                                                                          shape: RoundedRectangleBorder(
+                                                                                            borderRadius: BorderRadius.circular(5),
+                                                                                          ),
+                                                                                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                                                                                        ),
+                                                                                        onPressed: () {
+                                                                                          showPopupDialog(context, room['room_id']);
+                                                                                        },
+                                                                                        child: const Text(
+                                                                                          'Delete',
+                                                                                          style: TextStyle(color: Colors.white, fontSize: 18),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                    SizedBox(
+                                                                                      width: 170,
+                                                                                      child: ElevatedButton(
+                                                                                        style: ElevatedButton.styleFrom(
+                                                                                          backgroundColor: Colors.green,
+                                                                                          shape: RoundedRectangleBorder(
+                                                                                            borderRadius: BorderRadius.circular(5),
+                                                                                          ),
+                                                                                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                                                                                        ),
+                                                                                        onPressed: () async {
+                                                                                          try {
+                                                                                            // dynamic validation
+                                                                                            await updateRoomDetails(
+                                                                                              roomId: room['room_id'],
+                                                                                              price: roomPriceController.text.isEmpty
+                                                                                                  ? null
+                                                                                                  : roomPriceController.text,
+                                                                                              description: roomDescriptionController.text.isEmpty
+                                                                                                  ? null
+                                                                                                  : roomDescriptionController.text,
+                                                                                            );
+
+                                                                                            // for updating info in the ui as changes occur
+                                                                                            setState(() {
+                                                                                              if (roomPriceController.text.isNotEmpty) {
+                                                                                                room['room_price'] = int.parse(roomPriceController.text);
+                                                                                              }
+                                                                                              if (roomDescriptionController.text.isNotEmpty) {
+                                                                                                room['room_description'] = roomDescriptionController.text;
+                                                                                              }
+                                                                                            });
+
+                                                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                                                              const SnackBar(
+                                                                                                content: Text('Room updated successfully!'),
+                                                                                                backgroundColor: Colors.green,
                                                                                               ),
                                                                                             );
-                                                                                          } else {
-                                                                                            final imageUrl = snapshot.data!;
-                                                                                            return SizedBox(
-                                                                                              child: Image.network(
-                                                                                                imageUrl,
-                                                                                                width: 380,
-                                                                                                height: 200,
-                                                                                                fit: BoxFit.cover,
+                                                                                          } catch (e) {
+                                                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                                                              SnackBar(
+                                                                                                content: Text('Error: $e'),
+                                                                                                backgroundColor: Colors.red,
                                                                                               ),
                                                                                             );
                                                                                           }
-                                                                                        },
-                                                                                      )
-                                                                                    : Image.memory(
-                                                                                        _webImage!,
-                                                                                        fit: BoxFit.cover,
-                                                                                        width: double.infinity,
-                                                                                        height: double.infinity,
-                                                                                      ),
-                                                                              ),
-                                                                            ),
-                                                                            SizedBox(height: 20),
-                                                                            Text('${room['room_name']}',
-                                                                                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-                                                                            SizedBox(height: 10),
-                                                                            Padding(
-                                                                                padding: EdgeInsets.all(20),
-                                                                                child: Column(
-                                                                                  children: [
-                                                                                    TextField(
-                                                                                        controller: roomDescriptionController,
-                                                                                        decoration: InputDecoration(
-                                                                                          labelText: '${room['room_description']}',
-                                                                                          prefixIcon: Icon(
-                                                                                            Icons.person,
-                                                                                            color: Colors.green,
-                                                                                          ),
-                                                                                          border: OutlineInputBorder(
-                                                                                            borderRadius: BorderRadius.circular(10),
-                                                                                          ),
-                                                                                          enabledBorder: OutlineInputBorder(
-                                                                                            borderRadius: BorderRadius.circular(10),
-                                                                                            borderSide: BorderSide(color: const Color.fromARGB(255, 105, 105, 105)),
-                                                                                          ),
-                                                                                          focusedBorder: OutlineInputBorder(
-                                                                                            borderRadius: BorderRadius.circular(10),
-                                                                                            borderSide: BorderSide(color: Colors.green),
-                                                                                          ),
-                                                                                        ),
-                                                                                        keyboardType: TextInputType.multiline,
-                                                                                        maxLines: 3,
-                                                                                        minLines: 1),
-                                                                                    SizedBox(height: 10),
-                                                                                    TextField(
-                                                                                      controller: roomPriceController,
-                                                                                      decoration: InputDecoration(
-                                                                                        labelText: '${room['room_price']}',
-                                                                                        prefixIcon: Icon(
-                                                                                          Icons.email,
-                                                                                          color: Colors.green,
-                                                                                        ),
-                                                                                        border: OutlineInputBorder(
-                                                                                          borderRadius: BorderRadius.circular(10),
-                                                                                        ),
-                                                                                        enabledBorder: OutlineInputBorder(
-                                                                                          borderRadius: BorderRadius.circular(10),
-                                                                                          borderSide: BorderSide(color: const Color.fromARGB(255, 105, 105, 105)),
-                                                                                        ),
-                                                                                        focusedBorder: OutlineInputBorder(
-                                                                                          borderRadius: BorderRadius.circular(10),
-                                                                                          borderSide: BorderSide(color: Colors.green),
-                                                                                        ),
-                                                                                      ),
-                                                                                    ),
-                                                                                    SizedBox(height: 15),
-                                                                                    Row(
-                                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                      children: [
-                                                                                        SizedBox(
-                                                                                          width: 170,
-                                                                                          child: ElevatedButton(
-                                                                                              style: ElevatedButton.styleFrom(
-                                                                                                backgroundColor: const Color.fromARGB(255, 226, 92, 82),
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                  borderRadius: BorderRadius.circular(5),
-                                                                                                ),
-                                                                                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                                                                                              ),
-                                                                                              onPressed: () {
-                                                                                                showPopupDialog(context, room['room_id']);
-                                                                                              },
-                                                                                              child: const Text(
-                                                                                                'Delete',
-                                                                                                style: TextStyle(color: Colors.white, fontSize: 18),
-                                                                                              )),
-                                                                                        ),
-                                                                                        SizedBox(
-                                                                                          width: 170,
-                                                                                          child: ElevatedButton(
-                                                                                              style: ElevatedButton.styleFrom(
-                                                                                                backgroundColor: Colors.green,
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                  borderRadius: BorderRadius.circular(5),
-                                                                                                ),
-                                                                                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                                                                                              ),
-                                                                                              onPressed: () {
-                                                                                                if (int.tryParse(roomPriceController.text) != null) {
-                                                                                                  updateRoomDetails(
-                                                                                                    roomId: room['room_id'],
-                                                                                                    price: roomPriceController.text,
-                                                                                                    description: roomDescriptionController.text,
-                                                                                                  );
-                                                                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                                                                    SnackBar(
-                                                                                                      content: Text('room updated successfully!'),
-                                                                                                      backgroundColor: Colors.green,
-                                                                                                    ),
-                                                                                                  );
-                                                                                                } else {
-                                                                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                                                                    SnackBar(
-                                                                                                      content: Text('please enter a valid number!'),
-                                                                                                      backgroundColor: Colors.red,
-                                                                                                    ),
-                                                                                                  );
-                                                                                                }
 
-                                                                                                Navigator.pop(context, true);
-                                                                                              },
-                                                                                              child: const Text(
-                                                                                                'Update',
-                                                                                                style: TextStyle(color: Colors.white, fontSize: 18),
-                                                                                              )),
+                                                                                          Navigator.pop(context, true);
+                                                                                        },
+                                                                                        child: const Text(
+                                                                                          'Update',
+                                                                                          style: TextStyle(color: Colors.white, fontSize: 18),
                                                                                         ),
-                                                                                      ],
+                                                                                      ),
                                                                                     ),
                                                                                   ],
-                                                                                )),
-                                                                          ],
-                                                                        ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                        ],
                                                                       ),
-                                                                    );
-                                                                  });
-                                                            }),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
                                                       ),
                                                     ),
                                                   ],

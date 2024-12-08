@@ -234,7 +234,7 @@ class _HomeTabState extends State<HomeTab> {
                         bottomRight: Radius.circular(20),
                       )),
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -306,7 +306,7 @@ class _HomeTabState extends State<HomeTab> {
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 20,
+                                          fontSize: 18,
                                         ),
                                       ),
                                       SizedBox(height: 5),
@@ -390,7 +390,7 @@ class _HomeTabState extends State<HomeTab> {
                                                   border: Border.all(
                                                 color: const Color.fromARGB(
                                                     255, 105, 105, 105),
-                                                width: 1.0,
+                                                width: 1,
                                               )),
                                               child: Center(
                                                 child: _webImage == null
@@ -441,7 +441,7 @@ class _HomeTabState extends State<HomeTab> {
                                             ),
                                             SizedBox(height: 10),
                                             Padding(
-                                                padding: EdgeInsets.all(20.0),
+                                                padding: EdgeInsets.all(20),
                                                 child: Column(
                                                   children: [
                                                     TextField(
@@ -773,7 +773,7 @@ class _HomeTabState extends State<HomeTab> {
                 ),
                 SizedBox(height: 5),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: SizedBox(
                     width: 450,
                     height: 620,

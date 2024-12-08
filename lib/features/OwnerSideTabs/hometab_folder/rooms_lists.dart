@@ -369,7 +369,7 @@ Future<void> _getBHDetails() async {
                                                       alignment:
                                                           Alignment.centerRight,
                                                       child: SizedBox(
-                                                        width: 120,
+                                                        width: 93,
                                                         height: 30,
                                                         child: ElevatedButton(
                                                             style:
@@ -387,7 +387,7 @@ Future<void> _getBHDetails() async {
                                                               children: [
                                                                 Icon(Icons.edit,
                                                                     color: Colors
-                                                                        .green),
+                                                                        .green, size: 16,),
                                                                 SizedBox(
                                                                     width: 8),
                                                                 Text("Edit",

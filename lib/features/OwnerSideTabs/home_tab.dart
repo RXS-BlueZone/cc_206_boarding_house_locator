@@ -223,563 +223,562 @@ class _HomeTabState extends State<HomeTab> {
         child: Stack(children: <Widget>[
           Positioned(
             child: SingleChildScrollView(
-              child: Expanded(
-                child: Column(children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                        )),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                FutureBuilder<String>(
-                                  future: _imageUrl,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const CircularProgressIndicator();
-                                    } else if (snapshot.hasError) {
-                                      return CircleAvatar(
-                                        radius: 40,
-                                        backgroundColor: Colors.white,
-                                        child: Icon(
-                                          Icons.person,
-                                          size: 40,
-                                          color: Colors.green,
-                                        ),
-                                      );
-                                    } else {
-                                      final imageUrl = snapshot.data!;
-                                      return ClipOval(
-                                        child: Image.network(
-                                          imageUrl,
-                                          width: 65,
-                                          height: 65,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                )
-                              ],
-                            ),
+              child: Column(children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      )),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              FutureBuilder<String>(
+                                future: _imageUrl,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const CircularProgressIndicator();
+                                  } else if (snapshot.hasError) {
+                                    return CircleAvatar(
+                                      radius: 40,
+                                      backgroundColor: Colors.white,
+                                      child: Icon(
+                                        Icons.person,
+                                        size: 40,
+                                        color: Colors.green,
+                                      ),
+                                    );
+                                  } else {
+                                    final imageUrl = snapshot.data!;
+                                    return ClipOval(
+                                      child: Image.network(
+                                        imageUrl,
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    );
+                                  }
+                                },
+                              )
+                            ],
                           ),
-                          FutureBuilder(
-                              future: supabase
-                                  .from('USERS')
-                                  .select(
-                                      'user_fullname, user_phonenumber, user_email, user_type')
-                                  .eq('user_id', widget.userId)
-                                  .single(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
-                                } else if (snapshot.hasError) {
-                                  return Center(
-                                      child: Text('Error: ${snapshot.error}'));
-                                } else if (!snapshot.hasData) {
-                                  return const Center(
-                                      child: Text('No user data found.'));
-                                } else {
-                                  final user =
-                                      snapshot.data as Map<String, dynamic>;
-                                  return Center(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${user['user_fullname']}',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
+                        ),
+                        FutureBuilder(
+                            future: supabase
+                                .from('USERS')
+                                .select(
+                                    'user_fullname, user_phonenumber, user_email, user_type')
+                                .eq('user_id', widget.userId)
+                                .single(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child: Text('Error: ${snapshot.error}'));
+                              } else if (!snapshot.hasData) {
+                                return const Center(
+                                    child: Text('No user data found.'));
+                              } else {
+                                final user =
+                                    snapshot.data as Map<String, dynamic>;
+                                return Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${user['user_fullname']}',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.email,
+                                              color: Colors.white, size: 14,),
+                                          Text(
+                                            ' ${user['user_email']}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Row(
+                                        ],
+                                      ),
+                                      SizedBox(height: 5),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.phone,
+                                            color: Colors.white, size: 14,
+                                          ),
+                                          Text(
+                                            ' ${user['user_phonenumber']}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            }),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: IconButton(
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (BuildContext context) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context)
+                                            .viewInsets
+                                            .bottom,
+                                      ),
+                                      child: SingleChildScrollView(
+                                        child: Column(
                                           children: [
-                                            Icon(Icons.email,
-                                                color: Colors.white, size: 16,),
-                                            Text(
-                                              ' ${user['user_email']}',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 14,
+                                            Align(
+                                              alignment: Alignment.topRight,
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                icon: Icon(Icons.close),
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 5),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.phone,
-                                              color: Colors.white, size: 16,
-                                            ),
-                                            Text(
-                                              ' ${user['user_phonenumber']}',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 14,
+                                            Text('Update User Profile'),
+                                            SizedBox(height: 10),
+                                            Container(
+                                              width: 350,
+                                              height: 180,
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                color: const Color.fromARGB(
+                                                    255, 105, 105, 105),
+                                                width: 1,
+                                              )),
+                                              child: Center(
+                                                child: _webImage == null
+                                                    ? FutureBuilder<String>(
+                                                        future: _imageUrl,
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting) {
+                                                            return const CircularProgressIndicator();
+                                                          } else if (snapshot
+                                                              .hasError) {
+                                                            return CircleAvatar(
+                                                              backgroundColor:
+                                                                  Colors.white,
+                                                              child: Icon(
+                                                                Icons.person,
+                                                                size: 40,
+                                                                color: Colors
+                                                                    .green,
+                                                              ),
+                                                            );
+                                                          } else {
+                                                            final imageUrl =
+                                                                snapshot.data!;
+                                                            return SizedBox(
+                                                              child:
+                                                                  Image.network(
+                                                                imageUrl,
+                                                                width: 380,
+                                                                height: 180,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                      )
+                                                    : Image.memory(
+                                                        _webImage!,
+                                                        fit: BoxFit.cover,
+                                                        width: double.infinity,
+                                                        height: double.infinity,
+                                                      ),
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                              }),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: IconButton(
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (BuildContext context) {
-                                      return Padding(
-                                        padding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context)
-                                              .viewInsets
-                                              .bottom,
-                                        ),
-                                        child: SingleChildScrollView(
-                                          child: Column(
-                                            children: [
-                                              Align(
-                                                alignment: Alignment.topRight,
-                                                child: IconButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  icon: Icon(Icons.close),
-                                                ),
-                                              ),
-                                              Text('Update User Profile'),
-                                              SizedBox(height: 10),
-                                              Container(
-                                                width: 350,
-                                                height: 180,
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 105, 105, 105),
-                                                  width: 1,
-                                                )),
-                                                child: Center(
-                                                  child: _webImage == null
-                                                      ? FutureBuilder<String>(
-                                                          future: _imageUrl,
-                                                          builder: (context,
-                                                              snapshot) {
-                                                            if (snapshot
-                                                                    .connectionState ==
-                                                                ConnectionState
-                                                                    .waiting) {
-                                                              return const CircularProgressIndicator();
-                                                            } else if (snapshot
-                                                                .hasError) {
-                                                              return CircleAvatar(
-                                                                backgroundColor:
-                                                                    Colors.white,
-                                                                child: Icon(
-                                                                  Icons.person,
-                                                                  size: 40,
+                                            SizedBox(height: 10),
+                                            Padding(
+                                                padding: EdgeInsets.all(20),
+                                                child: Column(
+                                                  children: [
+                                                    TextField(
+                                                      controller:
+                                                          fullnameController,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText: userFullName,
+                                                        prefixIcon: Icon(
+                                                          Icons.person,
+                                                          color: Colors.green,
+                                                        ),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        enabledBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          borderSide: BorderSide(
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  105,
+                                                                  105,
+                                                                  105)),
+                                                        ),
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          borderSide:
+                                                              BorderSide(
                                                                   color: Colors
-                                                                      .green,
-                                                                ),
-                                                              );
-                                                            } else {
-                                                              final imageUrl =
-                                                                  snapshot.data!;
-                                                              return SizedBox(
-                                                                child:
-                                                                    Image.network(
-                                                                  imageUrl,
-                                                                  width: 380,
-                                                                  height: 180,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                ),
-                                                              );
-                                                            }
-                                                          },
-                                                        )
-                                                      : Image.memory(
-                                                          _webImage!,
-                                                          fit: BoxFit.cover,
-                                                          width: double.infinity,
-                                                          height: double.infinity,
-                                                        ),
-                                                ),
-                                              ),
-                                              SizedBox(height: 10),
-                                              Padding(
-                                                  padding: EdgeInsets.all(20),
-                                                  child: Column(
-                                                    children: [
-                                                      TextField(
-                                                        controller:
-                                                            fullnameController,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          labelText: userFullName,
-                                                          prefixIcon: Icon(
-                                                            Icons.person,
-                                                            color: Colors.green,
-                                                          ),
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10),
-                                                          ),
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10),
-                                                            borderSide: BorderSide(
-                                                                color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    105,
-                                                                    105,
-                                                                    105)),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10),
-                                                            borderSide:
-                                                                BorderSide(
-                                                                    color: Colors
-                                                                        .green),
-                                                          ),
+                                                                      .green),
                                                         ),
                                                       ),
-                                                      SizedBox(height: 10),
-                                                      TextField(
-                                                        controller:
-                                                            emailController,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          labelText: userEmail,
-                                                          prefixIcon: Icon(
-                                                            Icons.email,
-                                                            color: Colors.green,
-                                                          ),
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10),
-                                                          ),
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10),
-                                                            borderSide: BorderSide(
-                                                                color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    105,
-                                                                    105,
-                                                                    105)),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10),
-                                                            borderSide:
-                                                                BorderSide(
-                                                                    color: Colors
-                                                                        .green),
-                                                          ),
+                                                    ),
+                                                    SizedBox(height: 10),
+                                                    TextField(
+                                                      controller:
+                                                          emailController,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText: userEmail,
+                                                        prefixIcon: Icon(
+                                                          Icons.email,
+                                                          color: Colors.green,
+                                                        ),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        enabledBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          borderSide: BorderSide(
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  105,
+                                                                  105,
+                                                                  105)),
+                                                        ),
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .green),
                                                         ),
                                                       ),
-                                                      SizedBox(height: 10),
-                                                      TextField(
-                                                        controller:
-                                                            phoneController,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          labelText:
-                                                              userPhoneNumber,
-                                                          prefixIcon: Icon(
-                                                            Icons.phone,
-                                                            color: Colors.green,
-                                                          ),
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10),
-                                                          ),
-                                                          enabledBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10),
-                                                            borderSide: BorderSide(
-                                                                color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    105,
-                                                                    105,
-                                                                    105)),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10),
-                                                            borderSide:
-                                                                BorderSide(
-                                                                    color: Colors
-                                                                        .green),
-                                                          ),
+                                                    ),
+                                                    SizedBox(height: 10),
+                                                    TextField(
+                                                      controller:
+                                                          phoneController,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText:
+                                                            userPhoneNumber,
+                                                        prefixIcon: Icon(
+                                                          Icons.phone,
+                                                          color: Colors.green,
+                                                        ),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        enabledBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          borderSide: BorderSide(
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  105,
+                                                                  105,
+                                                                  105)),
+                                                        ),
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .green),
                                                         ),
                                                       ),
-                                                      SizedBox(height: 10),
-                                                      Text(
-                                                        "Update your profile",
-                                                        style: TextStyle(
-                                                            fontSize: 13),
-                                                      ),
-                                                      SizedBox(height: 5),
-                                                      SizedBox(
-                                                        width: 400,
-                                                        child: ElevatedButton(
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                            backgroundColor:
-                                                                Colors.green,
-                                                            shape:
-                                                                RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
-                                                            ),
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                                    horizontal:
-                                                                        20,
-                                                                    vertical: 16),
+                                                    ),
+                                                    SizedBox(height: 10),
+                                                    Text(
+                                                      "Update your profile",
+                                                      style: TextStyle(
+                                                          fontSize: 13),
+                                                    ),
+                                                    SizedBox(height: 5),
+                                                    SizedBox(
+                                                      width: 400,
+                                                      child: ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              Colors.green,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
                                                           ),
-                                                          onPressed: () async {
-                                                            emailController.text =
-                                                                emailController
-                                                                        .text
-                                                                        .isEmpty
-                                                                    ? userEmail
-                                                                    : emailController
-                                                                        .text;
-                                                            phoneController
-                                                                .text = phoneController
-                                                                    .text.isEmpty
-                                                                ? userPhoneNumber
-                                                                : phoneController
-                                                                    .text;
-                                                            fullnameController
-                                                                    .text =
-                                                                fullnameController
-                                                                        .text
-                                                                        .isEmpty
-                                                                    ? userFullName
-                                                                    : fullnameController
-                                                                        .text;
-                                                            bool emailChecker =
-                                                                checkEmail(
-                                                                    emailController
-                                                                        .text);
-                
-                                                            if (fullnameController
-                                                                    .text
-                                                                    .isEmpty &&
-                                                                emailController
-                                                                    .text
-                                                                    .isEmpty &&
-                                                                phoneController
-                                                                    .text
-                                                                    .isEmpty) {
-                                                              ScaffoldMessenger
-                                                                      .of(context)
-                                                                  .showSnackBar(
-                                                                SnackBar(
-                                                                  content: Text(
-                                                                      "Fill all the fields"),
-                                                                  backgroundColor:
-                                                                      Colors.red,
-                                                                ),
-                                                              );
-                                                              Navigator.pop(
-                                                                  context, true);
-                                                              return;
-                                                            }
-                                                            if (!emailChecker) {
-                                                              ScaffoldMessenger
-                                                                      .of(context)
-                                                                  .showSnackBar(
-                                                                SnackBar(
-                                                                  content: Text(
-                                                                      emailController
-                                                                          .text),
-                                                                  backgroundColor:
-                                                                      Colors.red,
-                                                                ),
-                                                              );
-                                                              Navigator.pop(
-                                                                  context, true);
-                                                              return;
-                                                            }
-                
-                                                            if (int.tryParse(
-                                                                    phoneController
-                                                                        .text) ==
-                                                                null) {
-                                                              ScaffoldMessenger
-                                                                      .of(context)
-                                                                  .showSnackBar(
-                                                                SnackBar(
-                                                                  content: Text(
-                                                                      'Please input a valid phone number'),
-                                                                  backgroundColor:
-                                                                      Colors.red,
-                                                                ),
-                                                              );
-                                                              Navigator.pop(
-                                                                  context, true);
-                                                              return;
-                                                            }
-                
-                                                            try {
-                                                              await updateUserDetails(
-                                                                userId:
-                                                                    widget.userId,
-                                                                fullname: fullnameController
-                                                                    .text = fullnameController
-                                                                        .text
-                                                                        .isEmpty
-                                                                    ? userFullName
-                                                                    : fullnameController
-                                                                        .text,
-                                                                email: emailController
-                                                                        .text =
-                                                                    emailController
-                                                                            .text
-                                                                            .isEmpty
-                                                                        ? userEmail
-                                                                        : emailController
-                                                                            .text,
-                                                                phoneNumber: phoneController
-                                                                    .text = phoneController
-                                                                        .text
-                                                                        .isEmpty
-                                                                    ? userPhoneNumber
-                                                                    : phoneController
-                                                                        .text,
-                                                              );
-                
-                                                              ScaffoldMessenger
-                                                                      .of(context)
-                                                                  .showSnackBar(
-                                                                SnackBar(
-                                                                  content: Text(
-                                                                      'Profile updated successfully!'),
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .green,
-                                                                ),
-                                                              );
-                
-                                                              _initializeData();
-                                                            } catch (e) {
-                                                              // Handle error and show message
-                                                              // ScaffoldMessenger
-                                                              //         .of(context)
-                                                              //     .showSnackBar(
-                                                              //   SnackBar(
-                                                              //     content: Text(
-                                                              //         'An error occurred while updating the profile.'),
-                                                              //     backgroundColor:
-                                                              //         Colors.red,
-                                                              // ),
-                                                              // );
-                                                            }
-                
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  horizontal:
+                                                                      20,
+                                                                  vertical: 16),
+                                                        ),
+                                                        onPressed: () async {
+                                                          emailController.text =
+                                                              emailController
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? userEmail
+                                                                  : emailController
+                                                                      .text;
+                                                          phoneController
+                                                              .text = phoneController
+                                                                  .text.isEmpty
+                                                              ? userPhoneNumber
+                                                              : phoneController
+                                                                  .text;
+                                                          fullnameController
+                                                                  .text =
+                                                              fullnameController
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? userFullName
+                                                                  : fullnameController
+                                                                      .text;
+                                                          bool emailChecker =
+                                                              checkEmail(
+                                                                  emailController
+                                                                      .text);
+
+                                                          if (fullnameController
+                                                                  .text
+                                                                  .isEmpty &&
+                                                              emailController
+                                                                  .text
+                                                                  .isEmpty &&
+                                                              phoneController
+                                                                  .text
+                                                                  .isEmpty) {
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(
+                                                                    "Fill all the fields"),
+                                                                backgroundColor:
+                                                                    Colors.red,
+                                                              ),
+                                                            );
                                                             Navigator.pop(
                                                                 context, true);
-                                                            fetchUserData();
-                                                          },
-                                                          child: Text(
-                                                            "Update Details",
-                                                            style: TextStyle(
-                                                              color: Colors.white,
-                                                              fontSize: 15,
-                                                            ),
+                                                            return;
+                                                          }
+                                                          if (!emailChecker) {
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(
+                                                                    emailController
+                                                                        .text),
+                                                                backgroundColor:
+                                                                    Colors.red,
+                                                              ),
+                                                            );
+                                                            Navigator.pop(
+                                                                context, true);
+                                                            return;
+                                                          }
+
+                                                          if (int.tryParse(
+                                                                  phoneController
+                                                                      .text) ==
+                                                              null) {
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(
+                                                                    'Please input a valid phone number'),
+                                                                backgroundColor:
+                                                                    Colors.red,
+                                                              ),
+                                                            );
+                                                            Navigator.pop(
+                                                                context, true);
+                                                            return;
+                                                          }
+
+                                                          try {
+                                                            await updateUserDetails(
+                                                              userId:
+                                                                  widget.userId,
+                                                              fullname: fullnameController
+                                                                  .text = fullnameController
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? userFullName
+                                                                  : fullnameController
+                                                                      .text,
+                                                              email: emailController
+                                                                      .text =
+                                                                  emailController
+                                                                          .text
+                                                                          .isEmpty
+                                                                      ? userEmail
+                                                                      : emailController
+                                                                          .text,
+                                                              phoneNumber: phoneController
+                                                                  .text = phoneController
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? userPhoneNumber
+                                                                  : phoneController
+                                                                      .text,
+                                                            );
+
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(
+                                                                    'Profile updated successfully!'),
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .green,
+                                                              ),
+                                                            );
+
+                                                            _initializeData();
+                                                          } catch (e) {
+                                                            // Handle error and show message
+                                                            // ScaffoldMessenger
+                                                            //         .of(context)
+                                                            //     .showSnackBar(
+                                                            //   SnackBar(
+                                                            //     content: Text(
+                                                            //         'An error occurred while updating the profile.'),
+                                                            //     backgroundColor:
+                                                            //         Colors.red,
+                                                            // ),
+                                                            // );
+                                                          }
+
+                                                          Navigator.pop(
+                                                              context, true);
+                                                          fetchUserData();
+                                                        },
+                                                        child: Text(
+                                                          "Update Details",
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 15,
                                                           ),
                                                         ),
                                                       ),
-                                                    ],
-                                                  )),
-                                            ],
-                                          ),
+                                                    ),
+                                                  ],
+                                                )),
+                                          ],
                                         ),
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.edit,
-                                  size: 15,
-                                ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              icon: Icon(
+                                Icons.edit,
+                                size: 15,
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 5),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: SizedBox(
-                      width: 450,
-                      height: 620,
-                      child: BoardingHouseLists(
-                          userId: widget.userId, refresh: refreshBoardingHouses),
-                    ),
+                ),
+                SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: SizedBox(
+                    width: 450,
+                    height: 620,
+                    child: BoardingHouseLists(
+                        userId: widget.userId, refresh: refreshBoardingHouses),
                   ),
-                ]),
-              ),
+                ),
+              ]),
             ),
           ),
           Positioned(

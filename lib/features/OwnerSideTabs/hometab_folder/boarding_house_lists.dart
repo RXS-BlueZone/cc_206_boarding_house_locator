@@ -191,7 +191,7 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
                       color: Colors.green.shade800,
                     ),
                   ),
-                  ElevatedButton.icon(
+                  ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(
@@ -199,9 +199,11 @@ class _BoardingHouseListsState extends State<BoardingHouseLists> {
                       ),
                     ),
                     onPressed: _getBoardingHouses,
-                    icon: const Icon(Icons.refresh, size: 18, color: Colors.white,),
-                     label: const Text( "Refresh", style: TextStyle(color: Colors.white),
-                  ),
+                    child: const Icon(
+                      Icons.refresh,
+                      size: 18,
+                      color: Colors.white,
+                    ),
                   )
                 ],
               ),

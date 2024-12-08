@@ -67,7 +67,6 @@ Future<void> _getBHDetails() async {
         .single();
 
     setState(() {
-      // Ensure build_rating defaults to 0 if null
       response['build_rating'] = response['build_rating'] ?? 0;
 
       boardingHouseDetails = response;
@@ -80,7 +79,6 @@ Future<void> _getBHDetails() async {
     });
   }
 }
-
 
   // function to fetch rooms from the database based in build_id
   Future<void> _getRooms() async {

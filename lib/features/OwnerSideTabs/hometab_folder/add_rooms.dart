@@ -196,7 +196,7 @@ class _AddRoomsState extends State<AddRooms> {
               key: _formKey,
               child: Center(
                 child: Padding(
-                  padding: EdgeInsets.all(30.0),
+                  padding: EdgeInsets.all(30),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -211,7 +211,7 @@ class _AddRoomsState extends State<AddRooms> {
                         decoration: BoxDecoration(
                             border: Border.all(
                           color: const Color.fromARGB(255, 105, 105, 105),
-                          width: 1.0,
+                          width: 1,
                         )),
                         child: Center(
                           child: _webImage == null

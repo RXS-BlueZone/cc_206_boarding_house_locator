@@ -37,6 +37,13 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def newApkName = "BoardM8-${variant.name}-${variant.versionName}-${variant.versionCode}.apk"
+            output.outputFileName = newApkName
+        }
+    }
 }
 
 flutter {

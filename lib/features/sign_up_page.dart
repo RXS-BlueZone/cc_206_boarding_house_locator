@@ -200,8 +200,8 @@ class _SignUpPageState extends State<SignUpPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Error'),
-            content: Text('An unexpected error occurred: $e'),
+            title: const Text('Oops!'),
+            content: Text('The email address you entered is already registered. Please use a different email or log in if you already have an account.'),
             actions: [
               TextButton(
                 onPressed: () {

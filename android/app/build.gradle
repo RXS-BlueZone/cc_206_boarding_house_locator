@@ -38,12 +38,17 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
+applicationVariants.all { variant ->
+    variant.outputs.all { output ->
+        if (output.outputFile != null && output.outputFileName != null) {
             def newApkName = "BoardM8-${variant.name}-${variant.versionName}-${variant.versionCode}.apk"
+            println "Setting APK name to: $newApkName"
             output.outputFileName = newApkName
         }
     }
+}
+
+
 }
 
 flutter {
